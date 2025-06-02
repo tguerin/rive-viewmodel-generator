@@ -1,0 +1,24 @@
+name: rive_viewmodel_generator
+description: A tool to parse Rive files and generate view model definitions
+version: 1.0.0
+
+environment:
+  sdk: '>=3.7.0 <4.0.0'
+  flutter: '>=3.29.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rive_native: ^0.0.1-dev.8
+  desktop_drop: ^0.6.0
+  code_builder: ^4.10.1
+  file_picker: ^6.1.1
+  universal_html: ^2.2.4
+  js: ^0.6.7
+
+dev_dependencies:
+  lints: ^3.0.0 
+  dart_style: ^2.3.4 
+
+flutter:
+  uses-material-design: true
