@@ -1,11 +1,11 @@
 {
-    "name": "rive_parser",
-    "short_name": "rive_parser",
+    "name": "Rive ViewModel Generator",
+    "short_name": "rvmg",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A Rive ViewModel Generator.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
