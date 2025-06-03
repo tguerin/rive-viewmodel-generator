@@ -92492,7 +92492,7 @@ a.as=new A.b6(null,"void")
 a.gR()
 a.y="dispose"
 a.gR()
-a.f=new A.ct("for (final controller in _streamControllers.values) {\n  controller.close();\n}\n_streamControllers.clear();\n\n// Dispose all cached properties\nfor (final property in _cachedProperties.values) {\n  if (property is ViewModelInstanceObservableValue) {\n    property.dispose();\n  }\n}\n_cachedProperties.clear();\n\n_viewModel.dispose();")},
+a.f=new A.ct("for (final controller in _streamControllers.values) {\n  controller.close();\n}\n_streamControllers.clear();\n\n// Dispose all cached properties\nfor (final property in _cachedProperties.values) {\n  property.dispose();\n}\n_cachedProperties.clear();\n\n_viewModel.dispose();")},
 $S:5}
 A.ake.prototype={
 $1(a){return a.length===0?"":a[0].toUpperCase()+B.c.c1(a,1)},
