@@ -6,14 +6,15 @@ import 'package:dart_style/dart_style.dart';
 import 'package:rive_native/rive_native.dart' as rive;
 
 class RiveParser {
-  final Uint8List bytes;
+  final Uint8List _bytes;
+  final String _fileName;
 
-  RiveParser(this.bytes);
+  RiveParser(this._bytes, this._fileName);
   final generatedClasses = <String>{};
   Future<String> generateDartCode() async {
     generatedClasses.clear();
     await rive.RiveNative.init();
-    final riveFile = await rive.File.decode(bytes, riveFactory: rive.Factory.flutter);
+    final riveFile = await rive.File.decode(_bytes, riveFactory: rive.Factory.flutter);
 
     if (riveFile == null) {
       throw Exception('Failed to decode Rive file');
@@ -29,12 +30,150 @@ class RiveParser {
       lib.directives.add(Directive.import('dart:async'));
       lib.directives.add(Directive.import('dart:ui'));
       lib.directives.add(Directive.import('package:rive_native/rive_native.dart'));
+
+      // Generate artboard sealed classes and state machine enums
+      final artboardData = <Map<String, dynamic>>[];
+      var artboardIndex = 0;
+      while (true) {
+        final artboard = riveFile.artboardAt(artboardIndex);
+        if (artboard == null) break;
+
+        final stateMachineNames = <String>[];
+        for (var smIndex = 0; smIndex < artboard.stateMachineCount(); smIndex++) {
+          final stateMachine = artboard.stateMachineAt(smIndex);
+          if (stateMachine?.name != null) {
+            stateMachineNames.add(stateMachine!.name);
+          }
+        }
+
+        artboardData.add({'name': artboard.name, 'stateMachines': stateMachineNames});
+        artboardIndex++;
+      }
+
+      if (artboardData.isNotEmpty) {
+        final fileNameBase = _fileName.split('.').first.toCamelCase().capitalize();
+        final sealedClassName = '${fileNameBase}Artboard'.capitalize();
+
+        // Generate state machine enums for each artboard
+        for (final artboard in artboardData) {
+          final artboardName = artboard['name'] as String;
+          final stateMachines = artboard['stateMachines'] as List<String>;
+
+          if (stateMachines.isNotEmpty) {
+            final stateMachineEnumName = '${artboardName.sanitizeIdentifier().toClassName()}StateMachine';
+
+            lib.body.add(
+              Enum((e) {
+                e.name = stateMachineEnumName;
+                e.values.addAll(
+                  stateMachines.map(
+                    (smName) => EnumValue((ev) {
+                      ev.name = smName.sanitizeIdentifier().toCamelCase();
+                      ev.arguments.add(literalString(smName));
+                    }),
+                  ),
+                );
+
+                // Add constructor and value property
+                e.constructors.add(
+                  Constructor((c) {
+                    c.constant = true;
+                    c.requiredParameters.add(Parameter((p) => p..name = 'this.value'));
+                  }),
+                );
+
+                e.fields.add(
+                  Field((f) {
+                    f.name = 'value';
+                    f.type = refer('String');
+                    f.modifier = FieldModifier.final$;
+                  }),
+                );
+              }),
+            );
+          }
+        }
+
+        // Generate sealed class
+        lib.body.add(
+          Class((c) {
+            c.name = sealedClassName;
+            c.sealed = true;
+            c.constructors.add(
+              Constructor((ctor) {
+                ctor.constant = true;
+              }),
+            );
+            c.methods.add(
+              Method((m) {
+                m.returns = refer('String');
+                m.type = MethodType.getter;
+                m.name = 'name';
+              }),
+            );
+          }),
+        );
+
+        // Generate implementation classes for each artboard
+        for (final artboard in artboardData) {
+          final artboardName = artboard['name'] as String;
+          final stateMachines = artboard['stateMachines'] as List<String>;
+          final className = artboardName.sanitizeIdentifier().toCamelCase().capitalize();
+
+          lib.body.add(
+            Class((c) {
+              c.name = className;
+              c.implements.add(refer(sealedClassName));
+
+              c.constructors.add(
+                Constructor((ctor) {
+                  ctor.constant = true;
+                }),
+              );
+
+              // Override name getter
+              c.methods.add(
+                Method((m) {
+                  m.returns = refer('String');
+                  m.type = MethodType.getter;
+                  m.name = 'name';
+                  m.annotations.add(refer('override'));
+                  m.body = Code("'${artboardName}'");
+                  m.lambda = true;
+                }),
+              );
+
+              // Add state machine getters
+              if (stateMachines.isNotEmpty) {
+                final stateMachineEnumName =
+                    '${artboardName.sanitizeIdentifier().toCamelCase().capitalize()}StateMachine';
+
+                for (final smName in stateMachines) {
+                  final smPropertyName = '${smName.sanitizeIdentifier().toCamelCase()}';
+                  final smEnumValue = smName.sanitizeIdentifier().toCamelCase();
+
+                  c.methods.add(
+                    Method((m) {
+                      m.returns = refer(stateMachineEnumName);
+                      m.type = MethodType.getter;
+                      m.name = smPropertyName;
+                      m.body = Code('$stateMachineEnumName.$smEnumValue');
+                      m.lambda = true;
+                    }),
+                  );
+                }
+              }
+            }),
+          );
+        }
+      }
+
       final classNames = <String>{};
       for (var i = 0; i < riveFile.viewModelCount; i++) {
         final viewModel = riveFile.viewModelByIndex(i);
         if (viewModel != null) {
           final classes = _generateViewModelClass(
-            viewModel.name.toClassName().sanitizeIdentifier().append('ViewModel'),
+            viewModel.name.sanitizeIdentifier().toCamelCase().append('ViewModel').capitalize(),
             viewModel.createDefaultInstance()!,
             riveFile,
             classNames,
@@ -96,7 +235,7 @@ class RiveParser {
             }
             specs.addAll(
               _generateViewModelClass(
-                property.name.toClassName().sanitizeIdentifier().append('ViewModel'),
+                property.name.sanitizeIdentifier().toCamelCase().append('ViewModel').capitalize(),
                 nestedViewModel,
                 riveFile,
                 classNames,
@@ -306,7 +445,7 @@ return (_streamControllers['${property.name}'] ??= () {
           break;
         case rive.DataType.enumType:
           final enumName = generatedClasses.firstWhere(
-            (e) => property.name.toClassName().sanitizeIdentifier().endsWith(e),
+            (e) => property.name.sanitizeIdentifier().toCamelCase().endsWith(e),
           );
           classBuilder.methods.add(
             Method((m) {
@@ -360,7 +499,7 @@ return (_streamControllers['${property.name}'] ??= () {
         case rive.DataType.viewModel:
           final nestedViewModel = viewModel.viewModel(property.name);
           if (nestedViewModel != null) {
-            final nestedClassName = property.name.toClassName().sanitizeIdentifier().append('ViewModel');
+            final nestedClassName = property.name.sanitizeIdentifier().toCamelCase().append('ViewModel').capitalize();
             classBuilder.methods.add(
               Method((m) {
                 m.returns = refer(nestedClassName);
@@ -524,11 +663,11 @@ _viewModel.dispose();''');
       case rive.DataType.boolean:
         return 'bool';
       case rive.DataType.enumType:
-        return property.name.toClassName().sanitizeIdentifier();
+        return property.name.sanitizeIdentifier().toCamelCase();
       case rive.DataType.viewModel:
         final nested = viewModel.viewModel(property.name);
         if (nested != null) {
-          return nested.name.toClassName().sanitizeIdentifier();
+          return nested.name.sanitizeIdentifier().toCamelCase();
         }
         if (viewModel.viewModel(property.name) != null) {
           return property.name.sanitizeIdentifier();

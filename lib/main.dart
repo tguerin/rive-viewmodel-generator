@@ -123,14 +123,23 @@ class _RiveParserHomeState extends State<RiveParserHome> {
           continue;
         }
 
-        final parser = RiveParser(await file.readAsBytes());
-        final dartCode = await parser.generateDartCode();
+        final fileNameWithoutExtension = file.name.replaceAll('.riv', '');
+        final parser = RiveParser(await file.readAsBytes(), fileNameWithoutExtension);
 
-        final fileName = '${file.name.replaceAll('.riv', '')}_viewmodel.dart';
+        try {
+          final dartCode = await parser.generateDartCode();
+          final fileName = '${fileNameWithoutExtension}_viewmodel.dart';
 
-        setState(() {
-          _generatedFiles.add(GeneratedFile(name: fileName, content: dartCode, timestamp: DateTime.now()));
-        });
+          setState(() {
+            _generatedFiles.add(GeneratedFile(name: fileName, content: dartCode, timestamp: DateTime.now()));
+          });
+        } catch (e) {
+          print(e);
+          setState(() {
+            _error = 'Error processing files: $e';
+          });
+          continue;
+        }
       }
     } catch (e) {
       setState(() {
