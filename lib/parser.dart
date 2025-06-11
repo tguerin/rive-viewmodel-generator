@@ -68,15 +68,14 @@ class RiveParser {
       if (sanitizedPropName.isEmpty) continue; // Skip empty property names
       switch (property.type) {
         case rive.DataType.enumType:
-          final enumName = _getDartType(property, riveFile, viewModel);
-          if (enumName.isEmpty) break;
-          final enumValues =
-              riveFile.enums
-                  .firstWhere(
-                    (e) => e.name.sanitizeIdentifier().toCamelCase().capitalize().endsWith(enumName),
-                    orElse: () => rive.DataEnum(property.name, []),
-                  )
-                  .values;
+          final propertyName = _getDartType(property, riveFile, viewModel);
+          if (propertyName.isEmpty) break;
+          final enumFromRive = riveFile.enums.firstWhere(
+            (e) => propertyName.endsWith(e.name.sanitizeIdentifier().toCamelCase().capitalize()),
+            orElse: () => rive.DataEnum(property.name, []),
+          );
+          final enumName = enumFromRive.name.toClassName();
+          final enumValues = enumFromRive.values;
           if (enumValues.isNotEmpty && !generatedClasses.contains(enumName)) {
             generatedClasses.add(enumName);
             specs.add(
@@ -306,7 +305,9 @@ return (_streamControllers['${property.name}'] ??= () {
           }
           break;
         case rive.DataType.enumType:
-          final enumName = _getDartType(property, riveFile, viewModel);
+          final enumName = generatedClasses.firstWhere(
+            (e) => property.name.toClassName().sanitizeIdentifier().endsWith(e),
+          );
           classBuilder.methods.add(
             Method((m) {
               m.returns = refer(enumName);
@@ -359,7 +360,7 @@ return (_streamControllers['${property.name}'] ??= () {
         case rive.DataType.viewModel:
           final nestedViewModel = viewModel.viewModel(property.name);
           if (nestedViewModel != null) {
-            final nestedClassName = property.name.toClassName().sanitizeIdentifier();
+            final nestedClassName = property.name.toClassName().sanitizeIdentifier().append('ViewModel');
             classBuilder.methods.add(
               Method((m) {
                 m.returns = refer(nestedClassName);
@@ -479,6 +480,9 @@ return (_streamControllers['${property.name}'] ??= () {
           break;
         case rive.DataType.list:
         case rive.DataType.none:
+        case rive.DataType.integer:
+        case rive.DataType.symbolListIndex:
+        case rive.DataType.image:
       }
     }
     classBuilder.methods.add(
@@ -535,6 +539,9 @@ _viewModel.dispose();''');
       case rive.DataType.trigger:
       case rive.DataType.none:
       case rive.DataType.string:
+      case rive.DataType.integer:
+      case rive.DataType.symbolListIndex:
+      case rive.DataType.image:
         return 'dynamic';
     }
   }
@@ -564,7 +571,7 @@ extension StringExtensions on String {
   }
 
   String toClassName() {
-    return split(RegExp(r'[-_]')).map((word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)).join('');
+    return split(RegExp(r'[-_]')).map((word) => word.isEmpty ? '' : word.capitalize()).join('');
   }
 
   String toSnakeCase() {
