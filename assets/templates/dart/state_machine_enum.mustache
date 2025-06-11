@@ -1,0 +1,7 @@
+enum {{name}} {
+{{#values}}
+  {{name}}('{{argument}}'){{^last}},{{/last}}
+{{/values}};
+const {{enumName}}(this.name);
+final String name;
+}

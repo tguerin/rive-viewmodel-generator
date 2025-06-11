@@ -4,21 +4,34 @@ version: 1.0.0
 
 environment:
   sdk: '>=3.7.0 <4.0.0'
-  flutter: '>=3.29.0'
+  flutter: '>=3.32.0'
 
 dependencies:
+  collection: ^1.18.0
+  dart_style: ^3.1.0
   flutter:
     sdk: flutter
   rive_native: ^0.0.2
   desktop_drop: ^0.6.0
   code_builder: ^4.10.1
-  file_picker: ^6.1.1
+  file_picker: ^10.1.9
   universal_html: ^2.2.4
-  js: ^0.6.7
+  mustache_template: ^2.0.0
 
 dev_dependencies:
-  lints: ^3.0.0 
-  dart_style: ^2.3.4 
+  lints: ^6.0.0 
+  flutter_gen_runner: ^5.4.0
+  build_runner: ^2.4.9
+
+flutter_gen:
+  output: lib/gen/
+  integrations:
+    flutter_svg: false
+    rive: false
+    lottie: false
 
 flutter:
   uses-material-design: true
+  
+  assets:
+    - assets/templates/dart/

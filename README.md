@@ -13,6 +13,7 @@ Check out the live demo at [tguerin.github.io/rive-viewmodel-generator](https://
 - Drag and drop interface for Rive files
 - Generates type-safe Dart view model classes
 - Supports all Rive property types (boolean, number, string, color, trigger, enum, nested view model)
+- Support Artboards and StateMachines generation
 - Generates stream getters for reactive programming
 - Works on both web and desktop platforms
 - Multiple file processing
@@ -39,6 +40,32 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:rive_native/rive_native.dart';
 
+enum Orientation { portrait, landscape }
+
+enum ArtboardStateMachine {
+  stateMachine1('State Machine 1');
+
+  const ArtboardStateMachine(this.name);
+  final String name;
+}
+
+sealed class _SealedArtboard {
+  String get name;
+}
+
+abstract interface class TestArtboard {
+  static const artboard = _Artboard();
+}
+
+class _Artboard implements _SealedArtboard {
+  const _Artboard();
+
+  @override
+  String get name => 'Artboard';
+
+  ArtboardStateMachine get stateMachine1 => ArtboardStateMachine.stateMachine1;
+}
+
 class NestedViewModel {
   NestedViewModel._(this._viewModel);
 
@@ -56,18 +83,18 @@ class NestedViewModel {
 
   Stream<double> get numberPropertyStream {
     return (_streamControllers['numberProperty'] ??= () {
-      final controller = StreamController<double>.broadcast();
-      _streamControllers['numberProperty'] = controller;
-      final property = _viewModel.number('numberProperty')!;
-      void valueListener(double value) => controller.add(value);
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<double>;
+          final controller = StreamController<double>.broadcast();
+          _streamControllers['numberProperty'] = controller;
+          final property = _viewModel.number('numberProperty')!;
+          void valueListener(double value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<double>;
   }
 
   void bind(StateMachine stateMachine) =>
@@ -82,8 +109,6 @@ class NestedViewModel {
   }
 }
 
-enum Orientation { portrait, landscape }
-
 class TestViewModel {
   TestViewModel._(this._viewModel);
 
@@ -96,7 +121,8 @@ class TestViewModel {
 
   NestedViewModel get nestedViewModel {
     return NestedViewModel.fromViewModel(
-        _viewModel.viewModel('nestedViewModel')!);
+      _viewModel.viewModel('nestedViewModel')!,
+    );
   }
 
   double get numberProperty => _viewModel.number('numberProperty')!.value;
@@ -106,18 +132,18 @@ class TestViewModel {
 
   Stream<double> get numberPropertyStream {
     return (_streamControllers['numberProperty'] ??= () {
-      final controller = StreamController<double>.broadcast();
-      _streamControllers['numberProperty'] = controller;
-      final property = _viewModel.number('numberProperty')!;
-      void valueListener(double value) => controller.add(value);
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<double>;
+          final controller = StreamController<double>.broadcast();
+          _streamControllers['numberProperty'] = controller;
+          final property = _viewModel.number('numberProperty')!;
+          void valueListener(double value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<double>;
   }
 
   void triggerProperty() => _viewModel.trigger('triggerProperty')!.trigger();
@@ -129,18 +155,18 @@ class TestViewModel {
 
   Stream<Color> get colorPropertyStream {
     return (_streamControllers['colorProperty'] ??= () {
-      final controller = StreamController<Color>.broadcast();
-      _streamControllers['colorProperty'] = controller;
-      final property = _viewModel.color('colorProperty')!;
-      void valueListener(Color value) => controller.add(value);
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<Color>;
+          final controller = StreamController<Color>.broadcast();
+          _streamControllers['colorProperty'] = controller;
+          final property = _viewModel.color('colorProperty')!;
+          void valueListener(Color value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<Color>;
   }
 
   bool get booleanProperty => _viewModel.boolean('booleanProperty')!.value;
@@ -150,18 +176,18 @@ class TestViewModel {
 
   Stream<bool> get booleanPropertyStream {
     return (_streamControllers['booleanProperty'] ??= () {
-      final controller = StreamController<bool>.broadcast();
-      _streamControllers['booleanProperty'] = controller;
-      final property = _viewModel.boolean('booleanProperty')!;
-      void valueListener(bool value) => controller.add(value);
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<bool>;
+          final controller = StreamController<bool>.broadcast();
+          _streamControllers['booleanProperty'] = controller;
+          final property = _viewModel.boolean('booleanProperty')!;
+          void valueListener(bool value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<bool>;
   }
 
   String get stringProperty => _viewModel.string('stringProperty')!.value;
@@ -171,41 +197,43 @@ class TestViewModel {
 
   Stream<String> get stringPropertyStream {
     return (_streamControllers['stringProperty'] ??= () {
-      final controller = StreamController<String>.broadcast();
-      _streamControllers['stringProperty'] = controller;
-      final property = _viewModel.string('stringProperty')!;
-      void valueListener(String value) => controller.add(value);
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<String>;
+          final controller = StreamController<String>.broadcast();
+          _streamControllers['stringProperty'] = controller;
+          final property = _viewModel.string('stringProperty')!;
+          void valueListener(String value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<String>;
   }
 
-  Orientation get orientation => Orientation.values
-      .firstWhere((e) => e.name == _viewModel.enumerator('orientation')!.value);
+  Orientation get orientation => Orientation.values.firstWhere(
+    (e) => e.name == _viewModel.enumerator('orientation')!.value,
+  );
 
   set orientation(Orientation value) =>
       _viewModel.enumerator('orientation')!.value = value.name;
 
   Stream<Orientation> get orientationStream {
     return (_streamControllers['orientation'] ??= () {
-      final controller = StreamController<Orientation>.broadcast();
-      _streamControllers['orientation'] = controller;
-      final property = _viewModel.enumerator('orientation')!;
-      void valueListener(String value) =>
-          controller.add(Orientation.values.firstWhere((e) => e.name == value));
-      void onListen() => property.addListener(valueListener);
-      void onCancel() => property.removeListener(valueListener);
-      controller
-        ..onListen = onListen
-        ..onCancel = onCancel;
-      return controller;
-    }())
-        .stream as Stream<Orientation>;
+          final controller = StreamController<Orientation>.broadcast();
+          _streamControllers['orientation'] = controller;
+          final property = _viewModel.enumerator('orientation')!;
+          void valueListener(String value) => controller.add(
+            Orientation.values.firstWhere((e) => e.name == value),
+          );
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream
+        as Stream<Orientation>;
   }
 
   void bind(StateMachine stateMachine) =>
