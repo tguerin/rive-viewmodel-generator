@@ -1,0 +1,12 @@
+enum {{name}} {
+{{#values}}
+  {{name}}{{^last}},{{/last}}
+{{/values}}
+
+{{#hasConstructor}}
+
+  const {{enumName}}(this.value);
+
+  final String value;
+{{/hasConstructor}}
+}

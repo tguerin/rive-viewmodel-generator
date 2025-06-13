@@ -1,0 +1,7 @@
+{{#artboards}}
+abstract interface class {{name}} {
+{{#implementations}}
+  static const {{enumName}} = _{{className}}();
+{{/implementations}}
+}
+{{/artboards}}

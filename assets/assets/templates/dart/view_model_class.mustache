@@ -1,0 +1,259 @@
+class {{className}} {
+  {{className}}._(this._viewModel);
+
+  factory {{className}}.fromViewModel(ViewModelInstance viewModel) =
+      {{className}}._;
+
+  final ViewModelInstance _viewModel;
+
+  final Map<String, StreamController<dynamic>> _streamControllers = {};
+{{#properties}}
+{{#isBoolean}}
+
+  bool get {{name}} => _viewModel.boolean('{{originalName}}')!.value;
+
+  set {{name}}(bool value) => _viewModel.boolean('{{originalName}}')!.value = value;
+
+  Stream<bool> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<bool>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.boolean('{{originalName}}')!;
+      void valueListener(bool value) => controller.add(value);
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<bool>;
+  }
+{{/isBoolean}}
+{{#isImage}}
+  // ignore: use_setters_to_change_properties
+  void update{{name}}(RenderImage value) => _viewModel.image('{{originalName}}')!.value = value;
+
+  void update{{name}}FromImage({required Image image, required Factory riveFactory, required Rect? srcRect}) =>
+      _updateImage(image: image, propertyName: '{{originalName}}', riveFactory: riveFactory, srcRect: srcRect);
+
+  void update{{name}}FromImageProvider({required ImageProvider imageProvider, required Factory riveFactory}) =>
+      _updateImageFromImageProvider(
+        imageProvider: imageProvider,
+        propertyName: '{{originalName}}',
+        riveFactory: riveFactory,
+      );
+{{/isImage}}
+{{#isNumberInt}}
+
+  int get {{name}} => _viewModel.number('{{originalName}}')!.value.toInt();
+
+  set {{name}}(int value) => _viewModel.number('{{originalName}}')!.value = value.toDouble();
+
+  Stream<int> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<int>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.number('{{originalName}}')!;
+      void valueListener(double value) => controller.add(value.toInt());
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<int>;
+  }
+{{/isNumberInt}}
+{{#isNumberDouble}}
+
+  double get {{name}} => _viewModel.number('{{originalName}}')!.value;
+
+  set {{name}}(double value) => _viewModel.number('{{originalName}}')!.value = value;
+
+  Stream<double> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<double>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.number('{{originalName}}')!;
+      void valueListener(double value) => controller.add(value);
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<double>;
+  }
+{{/isNumberDouble}}
+{{#isString}}
+
+  String get {{name}} => _viewModel.string('{{originalName}}')!.value;
+
+  set {{name}}(String value) => _viewModel.string('{{originalName}}')!.value = value;
+
+  Stream<String> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<String>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.string('{{originalName}}')!;
+      void valueListener(String value) => controller.add(value);
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<String>;
+  }
+{{/isString}}
+{{#isColor}}
+
+  Color get {{name}} => _viewModel.color('{{originalName}}')!.value;
+
+  set {{name}}(Color value) => _viewModel.color('{{originalName}}')!.value = value;
+
+  Stream<Color> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<Color>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.color('{{originalName}}')!;
+      void valueListener(Color value) => controller.add(value);
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<Color>;
+  }
+{{/isColor}}
+{{#isEnum}}
+
+  {{enumType}} get {{name}} => {{enumType}}.values.firstWhere((e) => e.name == _viewModel.enumerator('{{originalName}}')!.value);
+
+  set {{name}}({{enumType}} value) => _viewModel.enumerator('{{originalName}}')!.value = value.name;
+
+  Stream<{{enumType}}> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<{{enumType}}>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.enumerator('{{originalName}}')!;
+      void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.name == value));
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<{{enumType}}>;
+  }
+{{/isEnum}}
+{{#isViewModel}}
+
+  {{returnType}} get {{name}} {
+    return {{returnType}}.fromViewModel(_viewModel.viewModel('{{originalName}}')!);
+  }
+{{/isViewModel}}
+{{#isTrigger}}
+
+  void {{name}}() => _viewModel.trigger('{{originalName}}')!.trigger();
+{{/isTrigger}}
+{{/properties}}
+
+  {{#hasImages}}
+  Future<void> _updateImage({
+    required Image image,
+    required String propertyName,
+    required Factory riveFactory,
+    required Rect? srcRect,
+  }) async {
+    final Rect fullImageRect = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
+    final Rect imageRect = srcRect ?? fullImageRect;
+
+    Image? imageToRender;
+    Picture? picture;
+    try {
+      if (imageRect != fullImageRect) {
+        final PictureRecorder recorder = PictureRecorder();
+        Canvas(recorder).drawImageRect(image, imageRect, imageRect, Paint()..filterQuality = FilterQuality.medium);
+        picture = recorder.endRecording();
+        imageToRender = await picture.toImage(imageRect.width.toInt(), imageRect.height.toInt());
+      } else {
+        imageToRender = image;
+      }
+      final byteData = await imageToRender.toByteData(format: ImageByteFormat.png);
+      if (byteData == null) {
+        return;
+      }
+      final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
+      if (renderImage == null) return;
+      _viewModel.image(propertyName)!.value = renderImage;
+      renderImage.dispose();
+    } finally {
+      picture?.dispose();
+      if (imageToRender != image) {
+        imageToRender?.dispose();
+      }
+    }
+  }
+
+  Future<void> _updateImageFromImageProvider({
+    required ImageProvider imageProvider,
+    required String propertyName,
+    required Factory riveFactory,
+  }) async {
+    final completer = Completer<ImageInfo>();
+    final stream = imageProvider.resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener(
+      (info, _) {
+        if (completer.isCompleted) {
+          info.dispose();
+        } else {
+          completer.complete(info);
+        }
+      },
+      onError: (error, stackTrace) {
+        if (completer.isCompleted) return;
+        completer.completeError(error, stackTrace);
+      },
+    );
+
+    stream.addListener(listener);
+    final Image image;
+    final ImageInfo imageInfo;
+    try {
+      imageInfo = await completer.future;
+      image = imageInfo.image;
+    } catch (_) {
+      return;
+    } finally {
+      stream.removeListener(listener);
+    }
+
+    try {
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      if (byteData == null) {
+        image.dispose();
+        return;
+      }
+      final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
+      if (renderImage == null) return;
+
+      _viewModel.image(propertyName)!.value = renderImage;
+      renderImage.dispose();
+    } finally {
+      imageInfo.dispose();
+    }
+  }
+  {{/hasImages}}
+  void bind(StateMachine stateMachine) =>
+      stateMachine.bindViewModelInstance(_viewModel);
+
+  void dispose() {
+    for (final controller in _streamControllers.values) {
+      controller.close();
+    }
+    _streamControllers.clear();
+    _viewModel.dispose();
+  }
+} 

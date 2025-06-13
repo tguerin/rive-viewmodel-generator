@@ -1,0 +1,10 @@
+class _{{className}} implements _SealedArtboard {
+  const _{{className}}();
+
+  @override
+  String get name => '{{originalName}}';
+{{#stateMachineGetters}}
+
+  {{returnType}} get {{name}} => {{enumType}}.{{enumValue}};
+{{/stateMachineGetters}}
+} 
