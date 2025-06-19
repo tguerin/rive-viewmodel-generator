@@ -26,6 +26,22 @@ class PropertyModel {
     : metadata = metadata ?? {};
 }
 
+class ListPropertyModel {
+  final String name;
+  final String baseName;
+  final PropertyType itemType;
+  final List<PropertyModel> items;
+  final Map<String, dynamic> metadata;
+
+  ListPropertyModel({
+    required this.name,
+    required this.baseName,
+    required this.itemType,
+    required this.items,
+    Map<String, dynamic>? metadata,
+  }) : metadata = metadata ?? {};
+}
+
 class EnumModel {
   final String name;
   final List<String> values;
@@ -37,6 +53,7 @@ class ViewModelModel {
   final String name;
   final String className;
   final List<PropertyModel> properties;
+  final List<ListPropertyModel> listProperties;
   final List<ViewModelModel> nestedViewModels;
   final List<EnumModel> enums;
 
@@ -44,9 +61,11 @@ class ViewModelModel {
     required this.name,
     required this.className,
     required this.properties,
+    List<ListPropertyModel>? listProperties,
     List<ViewModelModel>? nestedViewModels,
     List<EnumModel>? enums,
-  }) : nestedViewModels = nestedViewModels ?? [],
+  }) : listProperties = listProperties ?? [],
+       nestedViewModels = nestedViewModels ?? [],
        enums = enums ?? [];
 }
 

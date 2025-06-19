@@ -165,8 +165,11 @@ class TemplateGenerator {
 
     result.add({
       'className': viewModel.className,
-      'hasImages': viewModel.properties.any((p) => p.type == PropertyType.image),
+      'hasImages':
+          viewModel.properties.any((p) => p.type == PropertyType.image) ||
+          viewModel.listProperties.any((lp) => lp.itemType == PropertyType.image),
       'properties': _buildProperties(viewModel.properties),
+      'listProperties': _buildListProperties(viewModel.listProperties),
     });
 
     return result;
@@ -193,5 +196,49 @@ class TemplateGenerator {
           },
         )
         .toList();
+  }
+
+  List<Map<String, dynamic>> _buildListProperties(List<ListPropertyModel> listProperties) {
+    return listProperties
+        .map(
+          (listProp) => {
+            'name': listProp.name,
+            'baseName': listProp.baseName,
+            'itemType': listProp.itemType,
+            'items':
+                listProp.items
+                    .map(
+                      (item) => {
+                        'name': item.name,
+                        'originalName': item.originalName,
+                        'index': _extractIndex(item.originalName),
+                      },
+                    )
+                    .toList(),
+            'count': listProp.items.length,
+            'isBoolean': listProp.itemType == PropertyType.boolean,
+            'isNumberInt': listProp.itemType == PropertyType.integer,
+            'isNumberDouble': listProp.itemType == PropertyType.number,
+            'isString': listProp.itemType == PropertyType.string,
+            'isColor': listProp.itemType == PropertyType.color,
+            'isEnum': listProp.itemType == PropertyType.enumType,
+            'isViewModel': listProp.itemType == PropertyType.viewModel,
+            'isTrigger': listProp.itemType == PropertyType.trigger,
+            'isImage': listProp.itemType == PropertyType.image,
+            'enumType': listProp.metadata['enumType'] ?? '',
+            'returnType': listProp.metadata['returnType'] ?? '',
+          },
+        )
+        .toList();
+  }
+
+  int _extractIndex(String propertyName) {
+    // Extract index from patterns like "blason_1", "blason_2", etc.
+    final regex = RegExp(r'^(.+?)_(\d+)$');
+    final match = regex.firstMatch(propertyName);
+    if (match != null) {
+      return int.tryParse(match.group(2)!) ?? 0;
+    }
+    return 0;
   }
 }

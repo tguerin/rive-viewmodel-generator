@@ -160,6 +160,314 @@ class {{className}} {
 {{/isTrigger}}
 {{/properties}}
 
+{{#listProperties}}
+{{#isBoolean}}
+
+  bool {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return _viewModel.boolean('{{originalName}}')!.value;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, bool value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.boolean('{{originalName}}')!.value = value; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<bool> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<bool>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.boolean('{{originalName}}')!;
+          void valueListener(bool value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<bool>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isBoolean}}
+{{#isNumberInt}}
+
+  int {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return _viewModel.number('{{originalName}}')!.value.toInt();
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, int value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.number('{{originalName}}')!.value = value.toDouble(); break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<int> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<int>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.number('{{originalName}}')!;
+          void valueListener(double value) => controller.add(value.toInt());
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<int>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isNumberInt}}
+{{#isNumberDouble}}
+
+  double {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return _viewModel.number('{{originalName}}')!.value;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, double value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.number('{{originalName}}')!.value = value; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<double> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<double>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.number('{{originalName}}')!;
+          void valueListener(double value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<double>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isNumberDouble}}
+{{#isString}}
+
+  String {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return _viewModel.string('{{originalName}}')!.value;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, String value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.string('{{originalName}}')!.value = value; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<String> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<String>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.string('{{originalName}}')!;
+          void valueListener(String value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<String>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isString}}
+{{#isColor}}
+
+  Color {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return _viewModel.color('{{originalName}}')!.value;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, Color value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.color('{{originalName}}')!.value = value; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<Color> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<Color>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.color('{{originalName}}')!;
+          void valueListener(Color value) => controller.add(value);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<Color>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isColor}}
+{{#isEnum}}
+
+  {{enumType}} {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return {{enumType}}.values.firstWhere((e) => e.name == _viewModel.enumerator('{{originalName}}')!.value);
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void set{{name}}(int index, {{enumType}} value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.enumerator('{{originalName}}')!.value = value.name; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<{{enumType}}> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<{{enumType}}>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.enumerator('{{originalName}}')!;
+          void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.name == value));
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<{{enumType}}>;
+      }
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isEnum}}
+{{#isViewModel}}
+
+  {{returnType}} {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: return {{returnType}}.fromViewModel(_viewModel.viewModel('{{originalName}}')!);
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isViewModel}}
+{{#isTrigger}}
+
+  void {{name}}(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.trigger('{{originalName}}')!.trigger(); break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isTrigger}}
+{{#isImage}}
+
+  void update{{name}}(int index, RenderImage value) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _viewModel.image('{{originalName}}')!.value = value; break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void update{{name}}FromImage(int index, {required Image image, required Factory riveFactory, required Rect? srcRect}) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _updateImage(image: image, propertyName: '{{originalName}}', riveFactory: riveFactory, srcRect: srcRect); break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  void update{{name}}FromImageProvider(int index, {required ImageProvider imageProvider, required Factory riveFactory}) {
+    switch (index) {
+{{#items}}
+      case {{index}}: _updateImageFromImageProvider(imageProvider: imageProvider, propertyName: '{{originalName}}', riveFactory: riveFactory); break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+{{/isImage}}
+
+  int get {{name}}Count => {{count}};
+{{/listProperties}}
+
   {{#hasImages}}
   Future<void> _updateImage({
     required Image image,

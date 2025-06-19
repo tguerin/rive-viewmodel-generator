@@ -50,7 +50,14 @@ class RiveParser {
     }
 
     final viewModels = <ViewModelModel>[];
+    final existingClasses = <String>{};
     final generatedClasses = <String>{};
+    for (var i = 0; i < riveFile.viewModelCount; i++) {
+      final viewModel = riveFile.viewModelByIndex(i);
+      if (viewModel != null) {
+        existingClasses.add(viewModel.name.toClassName().append('ViewModel'));
+      }
+    }
 
     for (var i = 0; i < riveFile.viewModelCount; i++) {
       final viewModel = riveFile.viewModelByIndex(i);
@@ -59,6 +66,7 @@ class RiveParser {
           viewModel.name.toClassName().append('ViewModel'),
           viewModel.createDefaultInstance()!,
           riveFile,
+          existingClasses,
           generatedClasses,
         );
         if (model != null) {
@@ -74,6 +82,7 @@ class RiveParser {
     String className,
     rive.ViewModelInstance viewModel,
     rive.File riveFile,
+    Set<String> existingClasses,
     Set<String> generatedClasses, {
     String? parent,
   }) {
@@ -84,7 +93,10 @@ class RiveParser {
     final enums = <EnumModel>[];
     final nestedViewModels = <ViewModelModel>[];
     final properties = <PropertyModel>[];
+    final listProperties = <ListPropertyModel>[];
 
+    // First pass: collect all properties
+    final allProperties = <PropertyModel>[];
     for (final property in viewModel.properties) {
       final sanitizedPropName = property.name.toCamelCase();
       if (sanitizedPropName.isEmpty) continue;
@@ -103,7 +115,7 @@ class RiveParser {
             enums.add(EnumModel(name: enumName, values: enumValues.map((value) => value.toCamelCase()).toList()));
           }
 
-          properties.add(
+          allProperties.add(
             PropertyModel(
               name: sanitizedPropName,
               originalName: property.name,
@@ -115,11 +127,16 @@ class RiveParser {
         case rive.DataType.viewModel:
           final nestedViewModel = viewModel.viewModel(property.name);
           if (nestedViewModel != null) {
-            final nestedClassName = property.name.toClassName().append('ViewModel');
+            final propertyNameAsClass = property.name.toClassName();
+            final nestedClassName = existingClasses.firstWhere(
+              (className) => propertyNameAsClass.startsWith(className.replaceAll('ViewModel', '').replaceAll('Vm', '')),
+              orElse: () => propertyNameAsClass,
+            );
             final nestedModel = _parseViewModelToIR(
               nestedClassName,
               nestedViewModel,
               riveFile,
+              existingClasses,
               generatedClasses,
               parent: className,
             );
@@ -127,7 +144,7 @@ class RiveParser {
               nestedViewModels.add(nestedModel);
             }
 
-            properties.add(
+            allProperties.add(
               PropertyModel(
                 name: sanitizedPropName,
                 originalName: property.name,
@@ -138,31 +155,35 @@ class RiveParser {
           }
 
         case rive.DataType.boolean:
-          properties.add(
+          allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.boolean),
           );
 
         case rive.DataType.number:
         case rive.DataType.integer:
-          properties.add(
+          allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.number),
           );
 
         case rive.DataType.string:
-          properties.add(
+          allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.string),
           );
 
         case rive.DataType.color:
-          properties.add(PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.color));
+          allProperties.add(
+            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.color),
+          );
 
         case rive.DataType.trigger:
           final triggerName =
               sanitizedPropName.startsWith('trigger') ? sanitizedPropName : 'trigger${sanitizedPropName.capitalize()}';
-          properties.add(PropertyModel(name: triggerName, originalName: property.name, type: PropertyType.trigger));
+          allProperties.add(PropertyModel(name: triggerName, originalName: property.name, type: PropertyType.trigger));
 
         case rive.DataType.image:
-          properties.add(PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.image));
+          allProperties.add(
+            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.image),
+          );
 
         default:
           // Skip unsupported types
@@ -170,14 +191,105 @@ class RiveParser {
       }
     }
 
+    // Second pass: group similar properties into lists
+    final groupedProperties = _groupPropertiesIntoLists(allProperties);
+    properties.addAll(groupedProperties.individualProperties);
+    listProperties.addAll(groupedProperties.listProperties);
+
     return ViewModelModel(
       name: className,
       className: className,
       properties: properties,
+      listProperties: listProperties,
       nestedViewModels: nestedViewModels,
       enums: enums,
     );
   }
+
+  _GroupedProperties _groupPropertiesIntoLists(List<PropertyModel> allProperties) {
+    final individualProperties = <PropertyModel>[];
+    final listProperties = <ListPropertyModel>[];
+
+    // Group properties by their base name (e.g., "blason_1", "blason_2" -> "blason")
+    final propertyGroups = <String, List<PropertyModel>>{};
+
+    for (final property in allProperties) {
+      final baseName = _extractBaseName(property.originalName);
+      propertyGroups.putIfAbsent(baseName, () => []).add(property);
+    }
+
+    for (final entry in propertyGroups.entries) {
+      final baseName = entry.key;
+      final groupProperties = entry.value;
+
+      // If we have multiple properties with the same base name and they follow a pattern
+      if (groupProperties.length > 1 && _isSequentialGroup(groupProperties)) {
+        // Sort by index to ensure proper order
+        groupProperties.sort((a, b) => _extractIndex(a.originalName).compareTo(_extractIndex(b.originalName)));
+
+        final firstProperty = groupProperties.first;
+        final listName = baseName.toCamelCase();
+
+        listProperties.add(
+          ListPropertyModel(
+            name: listName,
+            baseName: baseName,
+            itemType: firstProperty.type,
+            items: groupProperties,
+            metadata: firstProperty.metadata,
+          ),
+        );
+      } else {
+        // Add as individual properties
+        individualProperties.addAll(groupProperties);
+      }
+    }
+
+    return _GroupedProperties(individualProperties: individualProperties, listProperties: listProperties);
+  }
+
+  String _extractBaseName(String propertyName) {
+    // Extract base name from patterns like "blason_1", "blason_2", etc.
+    final regex = RegExp(r'^(.+?)_(\d+)$');
+    final match = regex.firstMatch(propertyName);
+    if (match != null) {
+      return match.group(1)!;
+    }
+    return propertyName;
+  }
+
+  int _extractIndex(String propertyName) {
+    // Extract index from patterns like "blason_1", "blason_2", etc.
+    final regex = RegExp(r'^(.+?)_(\d+)$');
+    final match = regex.firstMatch(propertyName);
+    if (match != null) {
+      return int.tryParse(match.group(2)!) ?? 0;
+    }
+    return 0;
+  }
+
+  bool _isSequentialGroup(List<PropertyModel> properties) {
+    if (properties.length < 2) return false;
+
+    // Check if all properties have the same type
+    final firstType = properties.first.type;
+    if (!properties.every((p) => p.type == firstType)) return false;
+
+    // Check if they follow a sequential naming pattern
+    final indices = properties.map((p) => _extractIndex(p.originalName)).toList()..sort();
+    for (int i = 1; i < indices.length; i++) {
+      if (indices[i] != indices[i - 1] + 1) return false;
+    }
+
+    return true;
+  }
+}
+
+class _GroupedProperties {
+  final List<PropertyModel> individualProperties;
+  final List<ListPropertyModel> listProperties;
+
+  _GroupedProperties({required this.individualProperties, required this.listProperties});
 }
 
 extension StringExtensions on String {
