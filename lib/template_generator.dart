@@ -181,6 +181,7 @@ class TemplateGenerator {
           (prop) => {
             'name': prop.name,
             'originalName': prop.originalName,
+            'capitalizedName': prop.name.capitalize(),
             'streamName': '${prop.name}Stream',
             'isBoolean': prop.type == PropertyType.boolean,
             'isNumberInt': prop.type == PropertyType.integer,

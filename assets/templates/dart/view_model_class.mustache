@@ -5,7 +5,10 @@ class {{className}} {
       {{className}}._;
 
   final ViewModelInstance _viewModel;
+  bool _disposed = false;
 
+  bool get isDisposed => _disposed;
+  
   final Map<String, StreamController<dynamic>> _streamControllers = {};
 {{#properties}}
 {{#isBoolean}}
@@ -31,17 +34,20 @@ class {{className}} {
 {{/isBoolean}}
 {{#isImage}}
   // ignore: use_setters_to_change_properties
-  void update{{name}}(RenderImage value) => _viewModel.image('{{originalName}}')!.value = value;
+  void update{{capitalizedName}}(RenderImage value) => _viewModel.image('{{originalName}}')!.value = value;
 
-  void update{{name}}FromImage({required Image image, required Factory riveFactory, required Rect? srcRect}) =>
+  void reset{{capitalizedName}}() => _viewModel.image('{{originalName}}')!.value = null;
+
+  Future<void> update{{capitalizedName}}FromImage({required Image image, required Factory riveFactory, required Rect? srcRect}) =>
       _updateImage(image: image, propertyName: '{{originalName}}', riveFactory: riveFactory, srcRect: srcRect);
 
-  void update{{name}}FromImageProvider({required ImageProvider imageProvider, required Factory riveFactory}) =>
+  Future<void> update{{capitalizedName}}FromImageProvider({required ImageProvider imageProvider, required Factory riveFactory}) =>
       _updateImageFromImageProvider(
         imageProvider: imageProvider,
         propertyName: '{{originalName}}',
         riveFactory: riveFactory,
       );
+
 {{/isImage}}
 {{#isNumberInt}}
 
@@ -483,18 +489,18 @@ class {{className}} {
     try {
       if (imageRect != fullImageRect) {
         final PictureRecorder recorder = PictureRecorder();
-        Canvas(recorder).drawImageRect(image, imageRect, imageRect, Paint()..filterQuality = FilterQuality.medium);
+        Canvas(recorder).drawImageRect(image, imageRect, Rect.fromLTWH(0, 0, imageRect.width, imageRect.height), Paint()..filterQuality = FilterQuality.medium);
         picture = recorder.endRecording();
         imageToRender = await picture.toImage(imageRect.width.toInt(), imageRect.height.toInt());
       } else {
         imageToRender = image;
       }
       final byteData = await imageToRender.toByteData(format: ImageByteFormat.png);
-      if (byteData == null) {
+      if (byteData == null || _disposed) {
         return;
       }
       final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
-      if (renderImage == null) return;
+      if (renderImage == null || _disposed) return;
       _viewModel.image(propertyName)!.value = renderImage;
       renderImage.dispose();
     } finally {
@@ -540,12 +546,12 @@ class {{className}} {
 
     try {
       final byteData = await image.toByteData(format: ImageByteFormat.png);
-      if (byteData == null) {
+      if (byteData == null || _disposed) {
         image.dispose();
         return;
       }
       final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
-      if (renderImage == null) return;
+      if (renderImage == null || _disposed) return;
 
       _viewModel.image(propertyName)!.value = renderImage;
       renderImage.dispose();
@@ -563,5 +569,6 @@ class {{className}} {
     }
     _streamControllers.clear();
     _viewModel.dispose();
+    _disposed = true;
   }
 } 
