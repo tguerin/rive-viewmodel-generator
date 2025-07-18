@@ -36,15 +36,18 @@ class {{className}} {
   // ignore: use_setters_to_change_properties
   void update{{capitalizedName}}(RenderImage value) => _viewModel.image('{{originalName}}')!.value = value;
 
-  void update{{capitalizedName}}FromImage({required Image image, required Factory riveFactory, required Rect? srcRect}) =>
+  void reset{{capitalizedName}}() => _viewModel.image('{{originalName}}')!.value = null;
+
+  Future<void> update{{capitalizedName}}FromImage({required Image image, required Factory riveFactory, required Rect? srcRect}) =>
       _updateImage(image: image, propertyName: '{{originalName}}', riveFactory: riveFactory, srcRect: srcRect);
 
-  void update{{capitalizedName}}FromImageProvider({required ImageProvider imageProvider, required Factory riveFactory}) =>
+  Future<void> update{{capitalizedName}}FromImageProvider({required ImageProvider imageProvider, required Factory riveFactory}) =>
       _updateImageFromImageProvider(
         imageProvider: imageProvider,
         propertyName: '{{originalName}}',
         riveFactory: riveFactory,
       );
+
 {{/isImage}}
 {{#isNumberInt}}
 
