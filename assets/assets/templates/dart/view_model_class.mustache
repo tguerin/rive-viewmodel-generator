@@ -486,7 +486,7 @@ class {{className}} {
     try {
       if (imageRect != fullImageRect) {
         final PictureRecorder recorder = PictureRecorder();
-        Canvas(recorder).drawImageRect(image, imageRect, Rect.fromLTWH(0, 0, srcRect.width, srcRect.height), Paint()..filterQuality = FilterQuality.medium);
+        Canvas(recorder).drawImageRect(image, imageRect, Rect.fromLTWH(0, 0, imageRect.width, imageRect.height), Paint()..filterQuality = FilterQuality.medium);
         picture = recorder.endRecording();
         imageToRender = await picture.toImage(imageRect.width.toInt(), imageRect.height.toInt());
       } else {
