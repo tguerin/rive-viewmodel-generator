@@ -7,7 +7,12 @@ import 'dart:ui';
 {{#needPaintingImport}}
 import 'package:flutter/painting.dart';
 {{/needPaintingImport}}
+{{#useModernRive}}
+import 'package:rive/rive.dart';
+{{/useModernRive}}
+{{#useLegacyRive}}
 import 'package:rive_native/rive_native.dart';
+{{/useLegacyRive}}
 
 {{#enums}}
 {{>enum}}

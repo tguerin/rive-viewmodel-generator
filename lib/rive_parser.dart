@@ -13,7 +13,7 @@ class RiveParser {
 
   RiveParser(this._bytes, this._fileName);
 
-  Future<String> generateCode(Language language) async {
+  Future<String> generateCode(Language language, {RiveVersion riveVersion = RiveVersion.legacy}) async {
     await rive.RiveNative.init();
     final riveFile = await rive.File.decode(_bytes, riveFactory: rive.Factory.flutter);
 
@@ -22,7 +22,7 @@ class RiveParser {
     }
 
     final model = await _parseToIR(riveFile);
-    final generator = TemplateGenerator(language);
+    final generator = TemplateGenerator(language, riveVersion: riveVersion);
     return await generator.generate(model);
   }
 
