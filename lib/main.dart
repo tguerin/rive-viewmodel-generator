@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'rive_parser.dart';
-import 'supported_language.dart';
+import 'supported_language.dart' show Language, RiveVersion;
 
 void main() {
   runApp(const RiveParserApp());
@@ -51,6 +51,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
   final List<GeneratedFile> _generatedFiles = [];
   Timer? _updateTimer;
   Language _selectedLanguage = Language.dart;
+  RiveVersion _selectedRiveVersion = RiveVersion.modern;
 
   @override
   void initState() {
@@ -129,7 +130,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
         final parser = RiveParser(await file.readAsBytes(), fileNameWithoutExtension);
 
         try {
-          final generatedCode = await parser.generateCode(_selectedLanguage);
+          final generatedCode = await parser.generateCode(_selectedLanguage, riveVersion: _selectedRiveVersion);
           final fileName = '${fileNameWithoutExtension}_viewmodel${_selectedLanguage.fileExtension}';
 
           setState(() {
@@ -221,6 +222,54 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                               if (newValue != null) {
                                 setState(() {
                                   _selectedLanguage = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Rive version selection dropdown
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Rive Package Version', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<RiveVersion>(
+                            value: _selectedRiveVersion,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            items:
+                                RiveVersion.values.map((version) {
+                                  return DropdownMenuItem(
+                                    value: version,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          version == RiveVersion.modern ? Icons.new_releases : Icons.history,
+                                          size: 20,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(version.displayName),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                            onChanged: (RiveVersion? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _selectedRiveVersion = newValue;
                                 });
                               }
                             },

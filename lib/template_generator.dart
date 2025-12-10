@@ -8,10 +8,11 @@ import 'ir_models.dart';
 
 class TemplateGenerator {
   final Language language;
+  final RiveVersion riveVersion;
   Template? _mainTemplate;
   final Map<String, Template> _partialTemplates = {};
 
-  TemplateGenerator(this.language);
+  TemplateGenerator(this.language, {this.riveVersion = RiveVersion.legacy});
 
   Future<void> _loadTemplates() async {
     final templatePath = 'assets/templates/${language.name}';
@@ -60,7 +61,15 @@ class TemplateGenerator {
     final artboards = _buildArtboards(model);
     final viewModels = _buildViewModels(model);
     final needPaintingImport = viewModels.any((vm) => vm['hasImages'] == true);
-    return {'enums': enums, 'artboards': artboards, 'viewModels': viewModels, 'needPaintingImport': needPaintingImport};
+    final useModernRive = riveVersion == RiveVersion.modern;
+    return {
+      'enums': enums,
+      'artboards': artboards,
+      'viewModels': viewModels,
+      'needPaintingImport': needPaintingImport,
+      'useModernRive': useModernRive,
+      'useLegacyRive': !useModernRive,
+    };
   }
 
   List<Map<String, dynamic>> _buildEnums(RiveFileModel model) {
