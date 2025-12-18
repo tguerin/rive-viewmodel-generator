@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'dart:typed_data';
 
-import 'package:rive_native/rive_native.dart' as rive;
+import 'package:rive/rive.dart';
 import 'package:rive_viewmodel_generator/supported_language.dart';
 import 'package:rive_viewmodel_generator/template_generator.dart';
 
@@ -14,8 +14,8 @@ class RiveParser {
   RiveParser(this._bytes, this._fileName);
 
   Future<String> generateCode(Language language, {RiveVersion riveVersion = RiveVersion.legacy}) async {
-    await rive.RiveNative.init();
-    final riveFile = await rive.File.decode(_bytes, riveFactory: rive.Factory.flutter);
+    await RiveNative.init();
+    final riveFile = await File.decode(_bytes, riveFactory: Factory.flutter);
 
     if (riveFile == null) {
       throw Exception('Failed to decode Rive file');
@@ -26,7 +26,7 @@ class RiveParser {
     return await generator.generate(model);
   }
 
-  Future<RiveFileModel> _parseToIR(rive.File riveFile) async {
+  Future<RiveFileModel> _parseToIR(File riveFile) async {
     final fileNameBase = _fileName.split('.').first.toCamelCase().capitalize();
 
     final artboards = <ArtboardModel>[];
@@ -80,8 +80,8 @@ class RiveParser {
 
   ViewModelModel? _parseViewModelToIR(
     String className,
-    rive.ViewModelInstance viewModel,
-    rive.File riveFile,
+    ViewModelInstance viewModel,
+    File riveFile,
     Set<String> existingClasses,
     Set<String> generatedClasses, {
     String? parent,
@@ -102,10 +102,10 @@ class RiveParser {
       if (sanitizedPropName.isEmpty) continue;
 
       switch (property.type) {
-        case rive.DataType.enumType:
+        case DataType.enumType:
           final enumFromRive = riveFile.enums.firstWhere(
             (e) => property.name.toLowerCase().contains(e.name.toLowerCase()),
-            orElse: () => rive.DataEnum(property.name, []),
+            orElse: () => DataEnum(property.name, []),
           );
           final enumName = enumFromRive.name.toClassName();
           final enumValues = enumFromRive.values;
@@ -124,7 +124,7 @@ class RiveParser {
             ),
           );
 
-        case rive.DataType.viewModel:
+        case DataType.viewModel:
           final nestedViewModel = viewModel.viewModel(property.name);
           if (nestedViewModel != null) {
             final propertyNameAsClass = property.name.toClassName();
@@ -154,33 +154,33 @@ class RiveParser {
             );
           }
 
-        case rive.DataType.boolean:
+        case DataType.boolean:
           allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.boolean),
           );
 
-        case rive.DataType.number:
-        case rive.DataType.integer:
+        case DataType.number:
+        case DataType.integer:
           allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.number),
           );
 
-        case rive.DataType.string:
+        case DataType.string:
           allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.string),
           );
 
-        case rive.DataType.color:
+        case DataType.color:
           allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.color),
           );
 
-        case rive.DataType.trigger:
+        case DataType.trigger:
           final triggerName =
               sanitizedPropName.startsWith('trigger') ? sanitizedPropName : 'trigger${sanitizedPropName.capitalize()}';
           allProperties.add(PropertyModel(name: triggerName, originalName: property.name, type: PropertyType.trigger));
 
-        case rive.DataType.image:
+        case DataType.image:
           allProperties.add(
             PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.image),
           );
