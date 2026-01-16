@@ -144,7 +144,6 @@ class _RiveParserHomeState extends State<RiveParserHome> {
             );
           });
         } catch (e) {
-          print(e);
           setState(() {
             _error = 'Error processing files: $e';
           });
@@ -195,7 +194,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           const Text('Target Language', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<Language>(
-                            value: _selectedLanguage,
+                            initialValue: _selectedLanguage,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -211,7 +210,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                                         Text(language.displayName),
                                         const SizedBox(width: 8),
                                         Text(
-                                          '${language.fileExtension}',
+                                          language.fileExtension,
                                           style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                                         ),
                                       ],
@@ -241,10 +240,13 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Rive Package Version', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                          const Text(
+                            'Rive Package Version',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<RiveVersion>(
-                            value: _selectedRiveVersion,
+                            initialValue: _selectedRiveVersion,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

@@ -1,6 +1,3 @@
-/// Intermediate representation models for parsed Rive file data
-/// These models decouple parsing from code generation
-
 enum PropertyType {
   boolean,
   number,
