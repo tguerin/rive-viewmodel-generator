@@ -1,4 +1,4 @@
-class {{className}} {
+class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   {{className}}._(this._viewModel);
 
   factory {{className}}.fromViewModel(ViewModelInstance viewModel) =
@@ -7,6 +7,9 @@ class {{className}} {
   final ViewModelInstance _viewModel;
   bool _disposed = false;
 
+{{#useInterface}}
+  @override
+{{/useInterface}}
   bool get isDisposed => _disposed;
   
   final Map<String, StreamController<dynamic>> _streamControllers = {};
@@ -563,6 +566,9 @@ class {{className}} {
   void bind(StateMachine stateMachine) =>
       stateMachine.bindViewModelInstance(_viewModel);
 
+{{#useInterface}}
+  @override
+{{/useInterface}}
   void dispose() {
     for (final controller in _streamControllers.values) {
       controller.close();
