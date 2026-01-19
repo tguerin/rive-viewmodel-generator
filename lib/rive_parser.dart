@@ -91,7 +91,11 @@ class RiveParser {
 
   RiveParser(this._bytes, this._fileName);
 
-  Future<String> generateCode(Language language, {RiveVersion riveVersion = RiveVersion.legacy}) async {
+  Future<String> generateCode(
+    Language language, {
+    RiveVersion riveVersion = RiveVersion.legacy,
+    bool useInterface = false,
+  }) async {
     await RiveNative.init();
     final riveFile = await File.decode(_bytes, riveFactory: Factory.flutter);
 
@@ -100,7 +104,11 @@ class RiveParser {
     }
 
     final model = await _parseToIR(riveFile);
-    final generator = TemplateGenerator(language, riveVersion: riveVersion);
+    final generator = TemplateGenerator(
+      language,
+      riveVersion: riveVersion,
+      useInterface: useInterface,
+    );
     return await generator.generate(model);
   }
 
@@ -127,7 +135,11 @@ class RiveParser {
       }
 
       artboards.add(
-        ArtboardModel(name: artboard.name, className: artboard.name.toClassName(), stateMachines: stateMachines),
+        ArtboardModel(
+          name: artboard.name,
+          className: artboard.name.toClassName(),
+          stateMachines: stateMachines,
+        ),
       );
       artboardIndex++;
     }
@@ -158,7 +170,12 @@ class RiveParser {
       }
     }
 
-    return RiveFileModel(fileName: _fileName, fileNameBase: fileNameBase, artboards: artboards, viewModels: viewModels);
+    return RiveFileModel(
+      fileName: _fileName,
+      fileNameBase: fileNameBase,
+      artboards: artboards,
+      viewModels: viewModels,
+    );
   }
 
   ViewModelModel? _parseViewModelToIR(
@@ -181,7 +198,9 @@ class RiveParser {
     // First pass: collect all properties
     final allProperties = <PropertyModel>[];
     for (final property in viewModel.properties) {
-      final sanitizedPropName = _sanitizePropertyName(property.name.toCamelCase());
+      final sanitizedPropName = _sanitizePropertyName(
+        property.name.toCamelCase(),
+      );
       if (sanitizedPropName.isEmpty) continue;
 
       switch (property.type) {
@@ -198,7 +217,12 @@ class RiveParser {
             enums.add(
               EnumModel(
                 name: enumName,
-                values: enumValues.map((value) => _sanitizePropertyName(value.toCamelCase())).toList(),
+                values:
+                    enumValues
+                        .map(
+                          (value) => _sanitizePropertyName(value.toCamelCase()),
+                        )
+                        .toList(),
               ),
             );
           }
@@ -217,7 +241,9 @@ class RiveParser {
           if (nestedViewModel != null) {
             final propertyNameAsClass = property.name.toClassName();
             final nestedClassName = existingClasses.firstWhere(
-              (className) => propertyNameAsClass.startsWith(className.replaceAll('ViewModel', '').replaceAll('Vm', '')),
+              (className) => propertyNameAsClass.startsWith(
+                className.replaceAll('ViewModel', '').replaceAll('Vm', ''),
+              ),
               orElse: () => propertyNameAsClass,
             );
             final nestedModel = _parseViewModelToIR(
@@ -244,33 +270,61 @@ class RiveParser {
 
         case DataType.boolean:
           allProperties.add(
-            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.boolean),
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.boolean,
+            ),
           );
 
         case DataType.number:
         case DataType.integer:
           allProperties.add(
-            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.number),
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.number,
+            ),
           );
 
         case DataType.string:
           allProperties.add(
-            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.string),
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.string,
+            ),
           );
 
         case DataType.color:
           allProperties.add(
-            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.color),
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.color,
+            ),
           );
 
         case DataType.trigger:
           final triggerName =
-              sanitizedPropName.startsWith('trigger') ? sanitizedPropName : 'trigger${sanitizedPropName.capitalize()}';
-          allProperties.add(PropertyModel(name: triggerName, originalName: property.name, type: PropertyType.trigger));
+              sanitizedPropName.startsWith('trigger')
+                  ? sanitizedPropName
+                  : 'trigger${sanitizedPropName.capitalize()}';
+          allProperties.add(
+            PropertyModel(
+              name: triggerName,
+              originalName: property.name,
+              type: PropertyType.trigger,
+            ),
+          );
 
         case DataType.image:
           allProperties.add(
-            PropertyModel(name: sanitizedPropName, originalName: property.name, type: PropertyType.image),
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.image,
+            ),
           );
 
         default:
@@ -294,7 +348,9 @@ class RiveParser {
     );
   }
 
-  _GroupedProperties _groupPropertiesIntoLists(List<PropertyModel> allProperties) {
+  _GroupedProperties _groupPropertiesIntoLists(
+    List<PropertyModel> allProperties,
+  ) {
     final individualProperties = <PropertyModel>[];
     final listProperties = <ListPropertyModel>[];
 
@@ -313,7 +369,11 @@ class RiveParser {
       // If we have multiple properties with the same base name and they follow a pattern
       if (groupProperties.length > 1 && _isSequentialGroup(groupProperties)) {
         // Sort by index to ensure proper order
-        groupProperties.sort((a, b) => _extractIndex(a.originalName).compareTo(_extractIndex(b.originalName)));
+        groupProperties.sort(
+          (a, b) => _extractIndex(
+            a.originalName,
+          ).compareTo(_extractIndex(b.originalName)),
+        );
 
         final firstProperty = groupProperties.first;
         final listName = _sanitizePropertyName(baseName.toCamelCase());
@@ -333,7 +393,10 @@ class RiveParser {
       }
     }
 
-    return _GroupedProperties(individualProperties: individualProperties, listProperties: listProperties);
+    return _GroupedProperties(
+      individualProperties: individualProperties,
+      listProperties: listProperties,
+    );
   }
 
   String _extractBaseName(String propertyName) {
@@ -364,7 +427,8 @@ class RiveParser {
     if (!properties.every((p) => p.type == firstType)) return false;
 
     // Check if they follow a sequential naming pattern
-    final indices = properties.map((p) => _extractIndex(p.originalName)).toList()..sort();
+    final indices =
+        properties.map((p) => _extractIndex(p.originalName)).toList()..sort();
     for (int i = 1; i < indices.length; i++) {
       if (indices[i] != indices[i - 1] + 1) return false;
     }
@@ -377,7 +441,10 @@ class _GroupedProperties {
   final List<PropertyModel> individualProperties;
   final List<ListPropertyModel> listProperties;
 
-  _GroupedProperties({required this.individualProperties, required this.listProperties});
+  _GroupedProperties({
+    required this.individualProperties,
+    required this.listProperties,
+  });
 }
 
 extension StringExtensions on String {
@@ -398,11 +465,16 @@ extension StringExtensions on String {
 
     var normalized = replaceAll(RegExp(r'[^a-zA-Z0-9]'), ' ');
 
-    final words = normalized.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+    final words =
+        normalized
+            .split(RegExp(r'\s+'))
+            .where((word) => word.isNotEmpty)
+            .toList();
 
     if (words.isEmpty) return '';
 
-    return words[0].toLowerCase() + words.skip(1).map((word) => word.toLowerCase().capitalize()).join('');
+    return words[0].toLowerCase() +
+        words.skip(1).map((word) => word.toLowerCase().capitalize()).join('');
   }
 
   String toClassName() {
@@ -411,7 +483,10 @@ extension StringExtensions on String {
 
   String toSnakeCase() {
     if (isEmpty) return '';
-    return replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) => '${match[1]}_${match[2]}')
+    return replaceAllMapped(
+          RegExp(r'([a-z])([A-Z])'),
+          (match) => '${match[1]}_${match[2]}',
+        )
         .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')
         .toLowerCase()
         .replaceAll(RegExp(r'_+'), '_')

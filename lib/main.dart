@@ -22,7 +22,10 @@ class RiveParserApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Rive ViewModel Generator',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue), useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
       home: const RiveParserHome(),
     );
   }
@@ -34,7 +37,12 @@ class GeneratedFile {
   final DateTime timestamp;
   final Language language;
 
-  GeneratedFile({required this.name, required this.content, required this.timestamp, required this.language});
+  GeneratedFile({
+    required this.name,
+    required this.content,
+    required this.timestamp,
+    required this.language,
+  });
 }
 
 class RiveParserHome extends StatefulWidget {
@@ -52,6 +60,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
   Timer? _updateTimer;
   Language _selectedLanguage = Language.dart;
   RiveVersion _selectedRiveVersion = RiveVersion.modern;
+  bool _useRiveViewModelInterface = false;
 
   @override
   void initState() {
@@ -82,9 +91,12 @@ class _RiveParserHomeState extends State<RiveParserHome> {
         final file = File(savePath);
         await file.writeAsString(generatedFile.content);
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('File saved to: $savePath'), duration: const Duration(seconds: 2)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('File saved to: $savePath'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
         }
       }
     } else {
@@ -104,9 +116,12 @@ class _RiveParserHomeState extends State<RiveParserHome> {
       html.Url.revokeObjectUrl(url);
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('File download started'), duration: Duration(seconds: 2)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('File download started'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     }
   }
@@ -127,11 +142,19 @@ class _RiveParserHomeState extends State<RiveParserHome> {
         }
 
         final fileNameWithoutExtension = file.name.replaceAll('.riv', '');
-        final parser = RiveParser(await file.readAsBytes(), fileNameWithoutExtension);
+        final parser = RiveParser(
+          await file.readAsBytes(),
+          fileNameWithoutExtension,
+        );
 
         try {
-          final generatedCode = await parser.generateCode(_selectedLanguage, riveVersion: _selectedRiveVersion);
-          final fileName = '${fileNameWithoutExtension}_viewmodel${_selectedLanguage.fileExtension}';
+          final generatedCode = await parser.generateCode(
+            _selectedLanguage,
+            riveVersion: _selectedRiveVersion,
+            useInterface: _useRiveViewModelInterface,
+          );
+          final fileName =
+              '${fileNameWithoutExtension}_viewmodel${_selectedLanguage.fileExtension}';
 
           setState(() {
             _generatedFiles.add(
@@ -176,7 +199,10 @@ class _RiveParserHomeState extends State<RiveParserHome> {
             flex: 3,
             child: Center(
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                  maxHeight: 600,
+                ),
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
@@ -191,13 +217,22 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Target Language', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                          const Text(
+                            'Target Language',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<Language>(
                             initialValue: _selectedLanguage,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
                             items:
                                 Language.values.map((language) {
@@ -205,13 +240,20 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                                     value: language,
                                     child: Row(
                                       children: [
-                                        Icon(_getLanguageIcon(language), size: 20, color: Colors.grey.shade600),
+                                        Icon(
+                                          _getLanguageIcon(language),
+                                          size: 20,
+                                          color: Colors.grey.shade600,
+                                        ),
                                         const SizedBox(width: 8),
                                         Text(language.displayName),
                                         const SizedBox(width: 8),
                                         Text(
                                           language.fileExtension,
-                                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                                          style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -242,14 +284,20 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                         children: [
                           const Text(
                             'Rive Package Version',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<RiveVersion>(
                             initialValue: _selectedRiveVersion,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
                             items:
                                 RiveVersion.values.map((version) {
@@ -258,7 +306,9 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                                     child: Row(
                                       children: [
                                         Icon(
-                                          version == RiveVersion.modern ? Icons.new_releases : Icons.history,
+                                          version == RiveVersion.modern
+                                              ? Icons.new_releases
+                                              : Icons.history,
                                           size: 20,
                                           color: Colors.grey.shade600,
                                         ),
@@ -279,13 +329,51 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    // Interface options checkbox
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Interface Options',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          CheckboxListTile(
+                            title: const Text('Use RiveViewModel Interface'),
+                            subtitle: const Text(
+                              'Implement common dispose() interface',
+                            ),
+                            value: _useRiveViewModelInterface,
+                            contentPadding: EdgeInsets.zero,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _useRiveViewModelInterface = value ?? false;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     // Drop zone
                     Expanded(
                       child: DropTarget(
                         onDragDone: (details) {
                           if (details.files.isNotEmpty) {
-                            _handleFilesDrop(details.files.cast<DropItemFile>());
+                            _handleFilesDrop(
+                              details.files.cast<DropItemFile>(),
+                            );
                           }
                         },
                         onDragEntered: (details) {
@@ -300,7 +388,13 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: _isDragging ? Colors.blue : Colors.grey.shade300, width: 2),
+                            border: Border.all(
+                              color:
+                                  _isDragging
+                                      ? Colors.blue
+                                      : Colors.grey.shade300,
+                              width: 2,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.all(24),
@@ -310,29 +404,44 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                               Icon(
                                 Icons.file_upload,
                                 size: 64,
-                                color: _isDragging ? Colors.blue : Colors.grey.shade400,
+                                color:
+                                    _isDragging
+                                        ? Colors.blue
+                                        : Colors.grey.shade400,
                               ),
                               const SizedBox(height: 24),
                               Text(
-                                _isDragging ? 'Drop to generate code' : 'Drop .riv files here',
+                                _isDragging
+                                    ? 'Drop to generate code'
+                                    : 'Drop .riv files here',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: _isDragging ? Colors.blue : Colors.black,
+                                  color:
+                                      _isDragging ? Colors.blue : Colors.black,
                                 ),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Generated ${_selectedLanguage.displayName} code will be saved as files',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
                               ),
-                              if (_isProcessing) ...[const SizedBox(height: 24), const CircularProgressIndicator()],
+                              if (_isProcessing) ...[
+                                const SizedBox(height: 24),
+                                const CircularProgressIndicator(),
+                              ],
                               if (_error != null) ...[
                                 const SizedBox(height: 24),
                                 Text(
                                   _error!,
-                                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -357,7 +466,13 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Generated Files', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Generated Files',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       if (_generatedFiles.isNotEmpty)
                         IconButton(
                           iconSize: 20,
@@ -378,14 +493,20 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                         final file = _generatedFiles[index];
                         return Card(
                           child: ListTile(
-                            leading: Icon(_getLanguageIcon(file.language), color: Colors.grey.shade600),
+                            leading: Icon(
+                              _getLanguageIcon(file.language),
+                              color: Colors.grey.shade600,
+                            ),
                             title: Text(file.name),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   file.language.displayName,
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                                 Text(
                                   'Generated ${_formatTimestamp(file.timestamp)}',
@@ -393,7 +514,10 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                                 ),
                               ],
                             ),
-                            trailing: IconButton(icon: const Icon(Icons.download), onPressed: () => _saveFile(file)),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.download),
+                              onPressed: () => _saveFile(file),
+                            ),
                           ),
                         );
                       },

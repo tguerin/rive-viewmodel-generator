@@ -9,10 +9,15 @@ import 'ir_models.dart';
 class TemplateGenerator {
   final Language language;
   final RiveVersion riveVersion;
+  final bool useInterface;
   Template? _mainTemplate;
   final Map<String, Template> _partialTemplates = {};
 
-  TemplateGenerator(this.language, {this.riveVersion = RiveVersion.legacy});
+  TemplateGenerator(
+    this.language, {
+    this.riveVersion = RiveVersion.legacy,
+    this.useInterface = false,
+  });
 
   Future<void> _loadTemplates() async {
     final templatePath = 'assets/templates/${language.name}';
@@ -28,7 +33,9 @@ class TemplateGenerator {
 
     for (final name in templateNames) {
       try {
-        final content = await rootBundle.loadString('$templatePath/$name.mustache');
+        final content = await rootBundle.loadString(
+          '$templatePath/$name.mustache',
+        );
         _partialTemplates[name] = Template(content);
       } catch (e) {
         // Template doesn't exist for this language, that's ok
@@ -36,10 +43,17 @@ class TemplateGenerator {
     }
 
     try {
-      final mainContent = await rootBundle.loadString('$templatePath/main.mustache');
-      _mainTemplate = Template(mainContent, partialResolver: (name) => _partialTemplates[name]);
+      final mainContent = await rootBundle.loadString(
+        '$templatePath/main.mustache',
+      );
+      _mainTemplate = Template(
+        mainContent,
+        partialResolver: (name) => _partialTemplates[name],
+      );
     } catch (e) {
-      throw Exception('Main template not found for language: ${language.displayName}');
+      throw Exception(
+        'Main template not found for language: ${language.displayName}',
+      );
     }
   }
 
@@ -53,7 +67,9 @@ class TemplateGenerator {
 
   String _formatCode(String code) {
     if (language != Language.dart) return code;
-    return DartFormatter(languageVersion: DartFormatter.latestLanguageVersion).format(code);
+    return DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(code);
   }
 
   Map<String, dynamic> _buildContext(RiveFileModel model) {
@@ -69,6 +85,7 @@ class TemplateGenerator {
       'needPaintingImport': needPaintingImport,
       'useModernRive': useModernRive,
       'useLegacyRive': !useModernRive,
+      'useInterface': useInterface,
     };
   }
 
@@ -84,7 +101,15 @@ class TemplateGenerator {
         .map(
           (enumModel) => {
             'name': enumModel.name,
-            'values': enumModel.values.map((value) => {'name': value, 'last': value == enumModel.values.last}).toList(),
+            'values':
+                enumModel.values
+                    .map(
+                      (value) => {
+                        'name': value,
+                        'last': value == enumModel.values.last,
+                      },
+                    )
+                    .toList(),
             'hasConstructor': false,
             'enumName': enumModel.name,
           },
@@ -141,7 +166,8 @@ class TemplateGenerator {
                         artboard.stateMachines
                             .map(
                               (sm) => {
-                                'returnType': '${artboard.className}StateMachine',
+                                'returnType':
+                                    '${artboard.className}StateMachine',
                                 'name': sm.enumValue,
                                 'enumType': '${artboard.className}StateMachine',
                                 'enumValue': sm.enumValue,
@@ -165,7 +191,9 @@ class TemplateGenerator {
     return result;
   }
 
-  List<Map<String, dynamic>> _buildViewModelWithNested(ViewModelModel viewModel) {
+  List<Map<String, dynamic>> _buildViewModelWithNested(
+    ViewModelModel viewModel,
+  ) {
     final result = <Map<String, dynamic>>[];
 
     for (final nested in viewModel.nestedViewModels) {
@@ -176,9 +204,12 @@ class TemplateGenerator {
       'className': viewModel.className,
       'hasImages':
           viewModel.properties.any((p) => p.type == PropertyType.image) ||
-          viewModel.listProperties.any((lp) => lp.itemType == PropertyType.image),
+          viewModel.listProperties.any(
+            (lp) => lp.itemType == PropertyType.image,
+          ),
       'properties': _buildProperties(viewModel.properties),
       'listProperties': _buildListProperties(viewModel.listProperties),
+      'useInterface': useInterface,
     });
 
     return result;
@@ -208,7 +239,9 @@ class TemplateGenerator {
         .toList();
   }
 
-  List<Map<String, dynamic>> _buildListProperties(List<ListPropertyModel> listProperties) {
+  List<Map<String, dynamic>> _buildListProperties(
+    List<ListPropertyModel> listProperties,
+  ) {
     return listProperties
         .map(
           (listProp) => {

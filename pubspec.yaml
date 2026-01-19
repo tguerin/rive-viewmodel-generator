@@ -1,6 +1,7 @@
 name: rive_viewmodel_generator
 description: A tool to parse Rive files and generate view model definitions
 version: 1.0.0
+publish_to: none
 
 environment:
   sdk: '>=3.7.0 <4.0.0'
@@ -17,6 +18,8 @@ dependencies:
   file_picker: ^10.1.9
   universal_html: ^2.2.4
   mustache_template: ^2.0.0
+  rive_viewmodel:
+    path: packages/rive_viewmodel
 
 dev_dependencies:
   build_runner: ^2.4.9

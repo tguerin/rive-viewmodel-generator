@@ -1,0 +1,13 @@
+name: rive_viewmodel
+description: Abstract interface for Rive ViewModels with lifecycle management. Provides a common contract for generated Rive ViewModel classes.
+version: 1.0.0
+repository: https://github.com/yourusername/rive-viewmodel-generator
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+# This package is pure Dart, no Flutter dependencies
+# dependencies:
+
+dev_dependencies:
+  lints: ^6.0.0

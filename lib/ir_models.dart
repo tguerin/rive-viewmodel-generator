@@ -19,8 +19,12 @@ class PropertyModel {
   final PropertyType type;
   final Map<String, dynamic> metadata;
 
-  PropertyModel({required this.name, required this.originalName, required this.type, Map<String, dynamic>? metadata})
-    : metadata = metadata ?? {};
+  PropertyModel({
+    required this.name,
+    required this.originalName,
+    required this.type,
+    Map<String, dynamic>? metadata,
+  }) : metadata = metadata ?? {};
 }
 
 class ListPropertyModel {
@@ -78,7 +82,11 @@ class ArtboardModel {
   final String className;
   final List<StateMachineModel> stateMachines;
 
-  ArtboardModel({required this.name, required this.className, required this.stateMachines});
+  ArtboardModel({
+    required this.name,
+    required this.className,
+    required this.stateMachines,
+  });
 }
 
 class RiveFileModel {
