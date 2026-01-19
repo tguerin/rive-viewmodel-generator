@@ -7,6 +7,84 @@ import 'package:rive_viewmodel_generator/template_generator.dart';
 
 import 'ir_models.dart';
 
+const Set<String> _dartReservedKeywords = {
+  'abstract',
+  'as',
+  'assert',
+  'async',
+  'await',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'covariant',
+  'default',
+  'deferred',
+  'do',
+  'dynamic',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'extension',
+  'external',
+  'factory',
+  'false',
+  'final',
+  'finally',
+  'for',
+  'function',
+  'get',
+  'hide',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'interface',
+  'is',
+  'late',
+  'library',
+  'mixin',
+  'native',
+  'new',
+  'null',
+  'of',
+  'on',
+  'operator',
+  'part',
+  'required',
+  'rethrow',
+  'return',
+  'sealed',
+  'set',
+  'show',
+  'static',
+  'super',
+  'switch',
+  'sync',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'typedef',
+  'var',
+  'void',
+  'when',
+  'while',
+  'with',
+  'yield',
+};
+
+/// Sanitizes a property name to avoid Dart reserved keywords
+String _sanitizePropertyName(String name) {
+  if (_dartReservedKeywords.contains(name.toLowerCase())) {
+    return '${name}Property';
+  }
+  return name;
+}
+
 class RiveParser {
   final Uint8List _bytes;
   final String _fileName;
@@ -39,7 +117,12 @@ class RiveParser {
       for (var smIndex = 0; smIndex < artboard.stateMachineCount(); smIndex++) {
         final stateMachine = artboard.stateMachineAt(smIndex);
         if (stateMachine?.name != null) {
-          stateMachines.add(StateMachineModel(name: stateMachine!.name, enumValue: stateMachine.name.toCamelCase()));
+          stateMachines.add(
+            StateMachineModel(
+              name: stateMachine!.name,
+              enumValue: _sanitizePropertyName(stateMachine.name.toCamelCase()),
+            ),
+          );
         }
       }
 
@@ -98,7 +181,7 @@ class RiveParser {
     // First pass: collect all properties
     final allProperties = <PropertyModel>[];
     for (final property in viewModel.properties) {
-      final sanitizedPropName = property.name.toCamelCase();
+      final sanitizedPropName = _sanitizePropertyName(property.name.toCamelCase());
       if (sanitizedPropName.isEmpty) continue;
 
       switch (property.type) {
@@ -112,7 +195,12 @@ class RiveParser {
 
           if (enumValues.isNotEmpty && !generatedClasses.contains(enumName)) {
             generatedClasses.add(enumName);
-            enums.add(EnumModel(name: enumName, values: enumValues.map((value) => value.toCamelCase()).toList()));
+            enums.add(
+              EnumModel(
+                name: enumName,
+                values: enumValues.map((value) => _sanitizePropertyName(value.toCamelCase())).toList(),
+              ),
+            );
           }
 
           allProperties.add(
@@ -228,7 +316,7 @@ class RiveParser {
         groupProperties.sort((a, b) => _extractIndex(a.originalName).compareTo(_extractIndex(b.originalName)));
 
         final firstProperty = groupProperties.first;
-        final listName = baseName.toCamelCase();
+        final listName = _sanitizePropertyName(baseName.toCamelCase());
 
         listProperties.add(
           ListPropertyModel(
