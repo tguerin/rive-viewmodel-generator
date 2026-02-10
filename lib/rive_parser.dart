@@ -116,10 +116,20 @@ class RiveParser {
     final fileNameBase = _fileName.split('.').first.toCamelCase().capitalize();
 
     final artboards = <ArtboardModel>[];
+    final generatedArtboardClasses = <String>{};
     var artboardIndex = 0;
     while (true) {
       final artboard = riveFile.artboardAt(artboardIndex);
       if (artboard == null) break;
+
+      final className = artboard.name.toClassName();
+      
+      // Skip if we've already generated this artboard class
+      if (generatedArtboardClasses.contains(className)) {
+        artboardIndex++;
+        continue;
+      }
+      generatedArtboardClasses.add(className);
 
       final stateMachines = <StateMachineModel>[];
       for (var smIndex = 0; smIndex < artboard.stateMachineCount(); smIndex++) {
@@ -137,7 +147,7 @@ class RiveParser {
       artboards.add(
         ArtboardModel(
           name: artboard.name,
-          className: artboard.name.toClassName(),
+          className: className,
           stateMachines: stateMachines,
         ),
       );

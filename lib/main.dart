@@ -201,7 +201,6 @@ class _RiveParserHomeState extends State<RiveParserHome> {
               child: Container(
                 constraints: const BoxConstraints(
                   maxWidth: 500,
-                  maxHeight: 600,
                 ),
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -387,6 +386,9 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           });
                         },
                         child: Container(
+                          constraints: const BoxConstraints(
+                            minHeight: 250,
+                          ),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color:

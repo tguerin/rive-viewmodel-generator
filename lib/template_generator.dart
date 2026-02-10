@@ -129,54 +129,67 @@ class TemplateGenerator {
 
     final sealedClassName = '${model.fileNameBase}Artboard';
 
+    // Deduplicate state machine enums by enum name
+    final seenStateMachineEnums = <String>{};
+    final stateMachineEnums = <Map<String, dynamic>>[];
+    
+    for (final artboard in model.artboards) {
+      if (artboard.stateMachines.isEmpty) continue;
+      
+      final enumName = '${artboard.className}StateMachine';
+      if (seenStateMachineEnums.contains(enumName)) continue;
+      
+      seenStateMachineEnums.add(enumName);
+      stateMachineEnums.add({
+        'name': enumName,
+        'enumName': enumName,
+        'values':
+            artboard.stateMachines
+                .map(
+                  (sm) => {
+                    'name': sm.enumValue,
+                    'argument': sm.name,
+                    'last': sm == artboard.stateMachines.last,
+                  },
+                )
+                .toList(),
+      });
+    }
+
+    // Deduplicate implementations by className
+    final seenImplementations = <String>{};
+    final implementations = <Map<String, dynamic>>[];
+    
+    for (final artboard in model.artboards) {
+      if (seenImplementations.contains(artboard.className)) continue;
+      
+      seenImplementations.add(artboard.className);
+      implementations.add({
+        'className': artboard.className,
+        'sealedClassName': sealedClassName,
+        'originalName': artboard.name,
+        'enumName': artboard.name.toCamelCase().uncapitalize(),
+        'last': artboard == model.artboards.last,
+        'stateMachineGetters':
+            artboard.stateMachines
+                .map(
+                  (sm) => {
+                    'returnType': '${artboard.className}StateMachine',
+                    'name': sm.enumValue,
+                    'enumType': '${artboard.className}StateMachine',
+                    'enumValue': sm.enumValue,
+                  },
+                )
+                .toList(),
+      });
+    }
+
     return [
       {
         'hasSealedClass': model.artboards.isNotEmpty,
         'name': sealedClassName,
-        'stateMachineEnums':
-            model.artboards
-                .where((a) => a.stateMachines.isNotEmpty)
-                .map(
-                  (artboard) => {
-                    'name': '${artboard.className}StateMachine',
-                    'enumName': '${artboard.className}StateMachine',
-                    'values':
-                        artboard.stateMachines
-                            .map(
-                              (sm) => {
-                                'name': sm.enumValue,
-                                'argument': sm.name,
-                                'last': sm == artboard.stateMachines.last,
-                              },
-                            )
-                            .toList(),
-                  },
-                )
-                .toList(),
-        'implementations':
-            model.artboards
-                .map(
-                  (artboard) => {
-                    'className': artboard.className,
-                    'sealedClassName': sealedClassName,
-                    'originalName': artboard.name,
-                    'enumName': artboard.name.toCamelCase().uncapitalize(),
-                    'last': artboard == model.artboards.last,
-                    'stateMachineGetters':
-                        artboard.stateMachines
-                            .map(
-                              (sm) => {
-                                'returnType':
-                                    '${artboard.className}StateMachine',
-                                'name': sm.enumValue,
-                                'enumType': '${artboard.className}StateMachine',
-                                'enumValue': sm.enumValue,
-                              },
-                            )
-                            .toList(),
-                  },
-                )
-                .toList(),
+        'stateMachineEnums': stateMachineEnums,
+        'implementations': implementations,
       },
     ];
   }
