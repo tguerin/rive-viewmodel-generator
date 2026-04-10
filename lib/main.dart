@@ -144,7 +144,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
         useInterface: _useRiveViewModelInterface,
       );
       final generatedFileName =
-          '$fileNameWithoutExtension.rive${_selectedLanguage.fileExtension}';
+          '${fileNameWithoutExtension}_viewmodel.rive${_selectedLanguage.fileExtension}';
 
       setState(() {
         _generatedFiles.add(
@@ -187,6 +187,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
   }
 
   Future<void> _pickRivFiles() async {
+    if (_isProcessing) return;
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['riv'],
