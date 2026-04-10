@@ -78,10 +78,50 @@ const Set<String> _dartReservedKeywords = {
   'yield',
 };
 
+// Dart built-in types and common class names that should be avoided for enum/class names
+const Set<String> _dartBuiltInTypes = {
+  'type',
+  'string',
+  'int',
+  'double',
+  'bool',
+  'num',
+  'object',
+  'dynamic',
+  'void',
+  'function',
+  'list',
+  'map',
+  'set',
+  'future',
+  'stream',
+  'iterable',
+  'iterator',
+  'duration',
+  'datetime',
+  'uri',
+  'pattern',
+  'regexp',
+  'match',
+  'symbol',
+  'stacktrace',
+  'error',
+  'exception',
+  'null',
+};
+
 /// Sanitizes a property name to avoid Dart reserved keywords
 String _sanitizePropertyName(String name) {
   if (_dartReservedKeywords.contains(name.toLowerCase())) {
     return '${name}Property';
+  }
+  return name;
+}
+
+/// Sanitizes a class/enum name to avoid Dart built-in types
+String _sanitizeClassName(String name) {
+  if (_dartBuiltInTypes.contains(name.toLowerCase())) {
+    return '${name}Enum';
   }
   return name;
 }
@@ -220,7 +260,7 @@ class RiveParser {
             (e) => property.name.toLowerCase().contains(e.name.toLowerCase()),
             orElse: () => DataEnum(property.name, []),
           );
-          final enumName = enumFromRive.name.toClassName();
+          final enumName = _sanitizeClassName(enumFromRive.name.toClassName());
           final enumValues = enumFromRive.values;
 
           if (enumValues.isNotEmpty && !generatedClasses.contains(enumName)) {
