@@ -60,7 +60,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
   Timer? _updateTimer;
   Language _selectedLanguage = Language.dart;
   RiveVersion _selectedRiveVersion = RiveVersion.modern;
-  bool _useRiveViewModelInterface = false;
+  bool _useRiveViewModelInterface = true;
 
   @override
   void initState() {
