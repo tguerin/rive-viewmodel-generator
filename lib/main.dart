@@ -260,7 +260,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<Language>(
-                            initialValue: _selectedLanguage,
+                            value: _selectedLanguage,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
@@ -325,7 +325,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<RiveVersion>(
-                            initialValue: _selectedRiveVersion,
+                            value: _selectedRiveVersion,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
