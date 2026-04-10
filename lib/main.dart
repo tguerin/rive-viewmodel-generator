@@ -154,7 +154,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
             useInterface: _useRiveViewModelInterface,
           );
           final fileName =
-              '${fileNameWithoutExtension}_viewmodel${_selectedLanguage.fileExtension}';
+              '$fileNameWithoutExtension.rive${_selectedLanguage.fileExtension}';
 
           setState(() {
             _generatedFiles.add(
