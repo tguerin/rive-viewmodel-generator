@@ -60,7 +60,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
   Timer? _updateTimer;
   Language _selectedLanguage = Language.dart;
   RiveVersion _selectedRiveVersion = RiveVersion.modern;
-  bool _useRiveViewModelInterface = false;
+  bool _useRiveViewModelInterface = true;
 
   @override
   void initState() {
@@ -126,6 +126,43 @@ class _RiveParserHomeState extends State<RiveParserHome> {
     }
   }
 
+  Future<void> _processRivFile(String fileName, Uint8List bytes) async {
+    if (!fileName.endsWith('.riv')) {
+      setState(() {
+        _error = 'Skipping non-.riv file: $fileName';
+      });
+      return;
+    }
+
+    final fileNameWithoutExtension = fileName.replaceAll('.riv', '');
+    final parser = RiveParser(bytes, fileNameWithoutExtension);
+
+    try {
+      final generatedCode = await parser.generateCode(
+        _selectedLanguage,
+        riveVersion: _selectedRiveVersion,
+        useInterface: _useRiveViewModelInterface,
+      );
+      final generatedFileName =
+          '${fileNameWithoutExtension}_viewmodel.rive${_selectedLanguage.fileExtension}';
+
+      setState(() {
+        _generatedFiles.add(
+          GeneratedFile(
+            name: generatedFileName,
+            content: generatedCode,
+            timestamp: DateTime.now(),
+            language: _selectedLanguage,
+          ),
+        );
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Error processing files: $e';
+      });
+    }
+  }
+
   Future<void> _handleFilesDrop(List<DropItemFile> files) async {
     setState(() {
       _isProcessing = true;
@@ -134,43 +171,41 @@ class _RiveParserHomeState extends State<RiveParserHome> {
 
     try {
       for (final file in files) {
-        if (!file.name.endsWith('.riv')) {
-          setState(() {
-            _error = 'Skipping non-.riv file: ${file.name}';
-          });
-          continue;
-        }
+        await _processRivFile(file.name, await file.readAsBytes());
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Error processing files: $e';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
 
-        final fileNameWithoutExtension = file.name.replaceAll('.riv', '');
-        final parser = RiveParser(
-          await file.readAsBytes(),
-          fileNameWithoutExtension,
-        );
+  Future<void> _pickRivFiles() async {
+    if (_isProcessing) return;
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['riv'],
+      allowMultiple: true,
+      withData: true,
+    );
 
-        try {
-          final generatedCode = await parser.generateCode(
-            _selectedLanguage,
-            riveVersion: _selectedRiveVersion,
-            useInterface: _useRiveViewModelInterface,
-          );
-          final fileName =
-              '${fileNameWithoutExtension}_viewmodel${_selectedLanguage.fileExtension}';
+    if (result == null || result.files.isEmpty) return;
 
-          setState(() {
-            _generatedFiles.add(
-              GeneratedFile(
-                name: fileName,
-                content: generatedCode,
-                timestamp: DateTime.now(),
-                language: _selectedLanguage,
-              ),
-            );
-          });
-        } catch (e) {
-          setState(() {
-            _error = 'Error processing files: $e';
-          });
-          continue;
+    setState(() {
+      _isProcessing = true;
+      _error = null;
+    });
+
+    try {
+      for (final file in result.files) {
+        if (file.bytes != null && file.name.isNotEmpty) {
+          await _processRivFile(file.name, file.bytes!);
         }
       }
     } catch (e) {
@@ -225,7 +260,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<Language>(
-                            initialValue: _selectedLanguage,
+                            value: _selectedLanguage,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
@@ -290,7 +325,7 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<RiveVersion>(
-                            initialValue: _selectedRiveVersion,
+                            value: _selectedRiveVersion,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
@@ -385,69 +420,77 @@ class _RiveParserHomeState extends State<RiveParserHome> {
                             _isDragging = false;
                           });
                         },
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            minHeight: 250,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color:
-                                  _isDragging
-                                      ? Colors.blue
-                                      : Colors.grey.shade300,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.file_upload,
-                                size: 64,
-                                color:
-                                    _isDragging
-                                        ? Colors.blue
-                                        : Colors.grey.shade400,
+                        child: GestureDetector(
+                          onTap: _pickRivFiles,
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                minHeight: 250,
                               ),
-                              const SizedBox(height: 24),
-                              Text(
-                                _isDragging
-                                    ? 'Drop to generate code'
-                                    : 'Drop .riv files here',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                              decoration: BoxDecoration(
+                                border: Border.all(
                                   color:
-                                      _isDragging ? Colors.blue : Colors.black,
+                                      _isDragging
+                                          ? Colors.blue
+                                          : Colors.grey.shade300,
+                                  width: 2,
                                 ),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Generated ${_selectedLanguage.displayName} code will be saved as files',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              if (_isProcessing) ...[
-                                const SizedBox(height: 24),
-                                const CircularProgressIndicator(),
-                              ],
-                              if (_error != null) ...[
-                                const SizedBox(height: 24),
-                                Text(
-                                  _error!,
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 16,
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.file_upload,
+                                    size: 64,
+                                    color:
+                                        _isDragging
+                                            ? Colors.blue
+                                            : Colors.grey.shade400,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ],
+                                  const SizedBox(height: 24),
+                                  Text(
+                                    _isDragging
+                                        ? 'Drop to generate code'
+                                        : 'Drop .riv files here',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          _isDragging
+                                              ? Colors.blue
+                                              : Colors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'or click to browse files',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  if (_isProcessing) ...[
+                                    const SizedBox(height: 24),
+                                    const CircularProgressIndicator(),
+                                  ],
+                                  if (_error != null) ...[
+                                    const SizedBox(height: 24),
+                                    Text(
+                                      _error!,
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
