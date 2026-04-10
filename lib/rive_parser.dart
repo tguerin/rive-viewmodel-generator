@@ -68,6 +68,7 @@ const Set<String> _dartReservedKeywords = {
   'throw',
   'true',
   'try',
+  'type',
   'typedef',
   'var',
   'void',
