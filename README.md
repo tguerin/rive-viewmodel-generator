@@ -274,8 +274,8 @@ viewModel.orientationStream.listen((orientation) {
 
 ## Requirements
 
-- Flutter 3.29.0 or higher
-- Dart SDK 3.7.0 or higher
+- Flutter 3.41.6 or higher
+- Dart SDK 3.11.4 or higher
 
 ## License
 
