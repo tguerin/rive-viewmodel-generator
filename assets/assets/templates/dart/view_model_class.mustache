@@ -11,7 +11,11 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   @override
 {{/useInterface}}
   bool get isDisposed => _disposed;
-  
+
+{{#hasImages}}
+  final Map<String, ({Completer<ImageInfo> completer, ImageStream stream, ImageStreamListener listener})> _pendingImageLoads = {};
+{{/hasImages}}
+
   final Map<String, StreamController<dynamic>> _streamControllers = {};
 {{#properties}}
 {{#isBoolean}}
@@ -498,12 +502,16 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
       } else {
         imageToRender = image;
       }
+      if (_disposed) return;
       final byteData = await imageToRender.toByteData(format: ImageByteFormat.png);
       if (byteData == null || _disposed) {
         return;
       }
       final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
-      if (renderImage == null || _disposed) return;
+      if (renderImage == null || _disposed) {
+        renderImage?.dispose();
+        return;
+      }
       _viewModel.image(propertyName)!.value = renderImage;
       renderImage.dispose();
     } finally {
@@ -521,8 +529,10 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   }) async {
     final completer = Completer<ImageInfo>();
     final stream = imageProvider.resolve(ImageConfiguration.empty);
-    final listener = ImageStreamListener(
+    late final ImageStreamListener listener;
+    listener = ImageStreamListener(
       (info, _) {
+        stream.removeListener(listener);
         if (completer.isCompleted) {
           info.dispose();
         } else {
@@ -530,36 +540,52 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
         }
       },
       onError: (error, stackTrace) {
+        stream.removeListener(listener);
         if (completer.isCompleted) return;
         completer.completeError(error, stackTrace);
       },
     );
 
+    _cancelPendingImageLoad(propertyName);
+    _pendingImageLoads[propertyName] = (completer: completer, stream: stream, listener: listener);
     stream.addListener(listener);
-    final Image image;
+
     final ImageInfo imageInfo;
     try {
       imageInfo = await completer.future;
-      image = imageInfo.image;
     } catch (_) {
       return;
     } finally {
-      stream.removeListener(listener);
+      _pendingImageLoads.remove(propertyName);
+    }
+
+    if (_disposed) {
+      imageInfo.dispose();
+      return;
     }
 
     try {
-      final byteData = await image.toByteData(format: ImageByteFormat.png);
-      if (byteData == null || _disposed) {
-        image.dispose();
+      final byteData = await imageInfo.image.toByteData(format: ImageByteFormat.png);
+      if (byteData == null || _disposed) return;
+
+      final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
+      if (renderImage == null || _disposed) {
+        renderImage?.dispose();
         return;
       }
-      final renderImage = await riveFactory.decodeImage(byteData.buffer.asUint8List());
-      if (renderImage == null || _disposed) return;
 
       _viewModel.image(propertyName)!.value = renderImage;
       renderImage.dispose();
     } finally {
       imageInfo.dispose();
+    }
+  }
+  void _cancelPendingImageLoad(String propertyName) {
+    final pending = _pendingImageLoads.remove(propertyName);
+    if (pending == null) return;
+    pending.stream.removeListener(pending.listener);
+    if (!pending.completer.isCompleted) {
+      pending.completer.completeError(StateError('cancelled'));
     }
   }
   {{/hasImages}}
@@ -570,11 +596,16 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   @override
 {{/useInterface}}
   void dispose() {
+    _disposed = true;
+{{#hasImages}}
+    for (final propertyName in _pendingImageLoads.keys.toList()) {
+      _cancelPendingImageLoad(propertyName);
+    }
+{{/hasImages}}
     for (final controller in _streamControllers.values) {
       controller.close();
     }
     _streamControllers.clear();
     _viewModel.dispose();
-    _disposed = true;
   }
 } 
