@@ -167,6 +167,28 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
     return {{returnType}}.fromViewModel(_viewModel.viewModel('{{originalName}}')!);
   }
 {{/isViewModel}}
+{{#isViewModelList}}
+
+  int get {{name}}Count => _viewModel.list('{{originalName}}')!.length;
+
+  {{returnType}} {{name}}At(int index) =>
+      {{returnType}}.fromViewModel(_viewModel.list('{{originalName}}')![index]);
+
+  void add{{capitalizedName}}({{returnType}} value) =>
+      _viewModel.list('{{originalName}}')!.add(value._viewModel);
+
+  bool insert{{capitalizedName}}(int index, {{returnType}} value) =>
+      _viewModel.list('{{originalName}}')!.insert(index, value._viewModel);
+
+  void remove{{capitalizedName}}({{returnType}} value) =>
+      _viewModel.list('{{originalName}}')!.remove(value._viewModel);
+
+  void remove{{capitalizedName}}At(int index) =>
+      _viewModel.list('{{originalName}}')!.removeAt(index);
+
+  void swap{{capitalizedName}}(int a, int b) =>
+      _viewModel.list('{{originalName}}')!.swap(a, b);
+{{/isViewModelList}}
 {{#isTrigger}}
 
   void {{name}}() => _viewModel.trigger('{{originalName}}')!.trigger();

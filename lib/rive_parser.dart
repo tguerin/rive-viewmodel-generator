@@ -378,6 +378,24 @@ class RiveParser {
             ),
           );
 
+        case DataType.list:
+          final propertyNameAsClass = property.name.toClassName();
+          final itemClassName = existingClasses.firstWhere(
+            (className) => propertyNameAsClass.startsWith(
+              className.replaceAll('ViewModel', '').replaceAll('Vm', ''),
+            ),
+            orElse: () => propertyNameAsClass.append('ViewModel'),
+          );
+
+          allProperties.add(
+            PropertyModel(
+              name: sanitizedPropName,
+              originalName: property.name,
+              type: PropertyType.viewModelList,
+              metadata: {'returnType': itemClassName},
+            ),
+          );
+
         default:
           // Skip unsupported types
           break;

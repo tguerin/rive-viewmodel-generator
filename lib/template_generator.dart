@@ -243,6 +243,7 @@ class TemplateGenerator {
             'isColor': prop.type == PropertyType.color,
             'isEnum': prop.type == PropertyType.enumType,
             'isViewModel': prop.type == PropertyType.viewModel,
+            'isViewModelList': prop.type == PropertyType.viewModelList,
             'isTrigger': prop.type == PropertyType.trigger,
             'isImage': prop.type == PropertyType.image,
             'enumType': prop.metadata['enumType'] ?? '',

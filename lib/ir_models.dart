@@ -5,6 +5,7 @@ enum PropertyType {
   color,
   enumType,
   viewModel,
+  viewModelList,
   trigger,
   list,
   none,
