@@ -43,9 +43,20 @@ class ListPropertyModel {
   }) : metadata = metadata ?? {};
 }
 
+class EnumValueModel {
+  /// Sanitized, Dart-legal enum value identifier (e.g. `staticProperty`).
+  final String name;
+
+  /// Original Rive enum value string used for runtime round-tripping
+  /// (e.g. `static`).
+  final String value;
+
+  EnumValueModel({required this.name, required this.value});
+}
+
 class EnumModel {
   final String name;
-  final List<String> values;
+  final List<EnumValueModel> values;
 
   EnumModel({required this.name, required this.values});
 }

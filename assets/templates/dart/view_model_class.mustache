@@ -138,16 +138,16 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
 {{/isColor}}
 {{#isEnum}}
 
-  {{enumType}} get {{name}} => {{enumType}}.values.firstWhere((e) => e.name == _viewModel.enumerator('{{originalName}}')!.value);
+  {{enumType}} get {{name}} => {{enumType}}.values.firstWhere((e) => e.value == _viewModel.enumerator('{{originalName}}')!.value);
 
-  set {{name}}({{enumType}} value) => _viewModel.enumerator('{{originalName}}')!.value = value.name;
+  set {{name}}({{enumType}} value) => _viewModel.enumerator('{{originalName}}')!.value = value.value;
 
   Stream<{{enumType}}> get {{streamName}} {
     return (_streamControllers['{{originalName}}'] ??= () {
       final controller = StreamController<{{enumType}}>.broadcast();
       _streamControllers['{{originalName}}'] = controller;
       final property = _viewModel.enumerator('{{originalName}}')!;
-      void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.name == value));
+      void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.value == value));
       void onListen() => property.addListener(valueListener);
       void onCancel() => property.removeListener(valueListener);
       controller
@@ -385,7 +385,7 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   {{enumType}} {{name}}(int index) {
     switch (index) {
 {{#items}}
-      case {{index}}: return {{enumType}}.values.firstWhere((e) => e.name == _viewModel.enumerator('{{originalName}}')!.value);
+      case {{index}}: return {{enumType}}.values.firstWhere((e) => e.value == _viewModel.enumerator('{{originalName}}')!.value);
 {{/items}}
       default: throw RangeError('Index $index is out of range for {{name}}');
     }
@@ -394,7 +394,7 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   void set{{name}}(int index, {{enumType}} value) {
     switch (index) {
 {{#items}}
-      case {{index}}: _viewModel.enumerator('{{originalName}}')!.value = value.name; break;
+      case {{index}}: _viewModel.enumerator('{{originalName}}')!.value = value.value; break;
 {{/items}}
       default: throw RangeError('Index $index is out of range for {{name}}');
     }
@@ -408,7 +408,7 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
           final controller = StreamController<{{enumType}}>.broadcast();
           _streamControllers['{{originalName}}'] = controller;
           final property = _viewModel.enumerator('{{originalName}}')!;
-          void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.name == value));
+          void valueListener(String value) => controller.add({{enumType}}.values.firstWhere((e) => e.value == value));
           void onListen() => property.addListener(valueListener);
           void onCancel() => property.removeListener(valueListener);
           controller

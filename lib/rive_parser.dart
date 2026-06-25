@@ -271,7 +271,10 @@ class RiveParser {
                 values:
                     enumValues
                         .map(
-                          (value) => _sanitizePropertyName(value.toCamelCase()),
+                          (value) => EnumValueModel(
+                            name: _sanitizePropertyName(value.toCamelCase()),
+                            value: value,
+                          ),
                         )
                         .toList(),
               ),
