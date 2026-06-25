@@ -105,12 +105,13 @@ class TemplateGenerator {
                 enumModel.values
                     .map(
                       (value) => {
-                        'name': value,
+                        'name': value.name,
+                        'argument': value.value,
                         'last': value == enumModel.values.last,
                       },
                     )
                     .toList(),
-            'hasConstructor': false,
+            'hasConstructor': true,
             'enumName': enumModel.name,
           },
         )
