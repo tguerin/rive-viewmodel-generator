@@ -1,9 +1,7 @@
 enum {{name}} {
 {{#values}}
-  {{name}}{{^last}},{{/last}}
-{{/values}}
-
-{{#hasConstructor}}
+  {{name}}{{#hasConstructor}}('{{argument}}'){{/hasConstructor}}{{^last}},{{/last}}
+{{/values}}{{#hasConstructor}};
 
   const {{enumName}}(this.value);
 
