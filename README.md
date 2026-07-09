@@ -21,11 +21,36 @@ Check out the live demo at [tguerin.github.io/rive-viewmodel-generator](https://
 
 ## Usage
 
+You can generate view models in two ways: the **web app** (drag & drop) or the **CLI** (`rive-gen`), which produce identical output.
+
+### Web app
+
 1. Open the application
 2. Drag and drop your `.riv` file(s) onto the drop zone
 3. The application will generate a Dart view model class for each Rive file
 4. Download the generated files using the download button next to each file
 5. Use the generated view model in your Flutter application
+
+### CLI
+
+A companion CLI, [`@rive-viewmodel/cli`](https://www.npmjs.com/package/@rive-viewmodel/cli), generates the same Dart code from the terminal — handy for scripting and CI.
+
+Install (or update) globally:
+
+```bash
+npm install -g @rive-viewmodel/cli          # first install
+npm install -g @rive-viewmodel/cli@latest   # update to newest
+```
+
+Generate:
+
+```bash
+rive-gen --input path/to/MyAnimation.riv --output lib/generated
+```
+
+Common options: `--modern` (use `package:rive/rive.dart`), `--interface` (implement `RiveViewModel`), `--name` (output file name). See the [CLI README](packages/rive-viewmodel-cli/README.md) for the full list.
+
+The CLI and web app share the same Mustache templates in `assets/templates/dart/`, so both stay in sync.
 
 ## Generated Code Example
 
