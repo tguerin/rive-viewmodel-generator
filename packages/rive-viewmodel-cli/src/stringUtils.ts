@@ -21,6 +21,11 @@ export function sanitizePropertyName(name: string): string {
   if (dartReservedKeywords.has(name.toLowerCase())) {
     return `${name}Property`;
   }
+  // Dart identifiers cannot start with a digit (e.g. enum values "10", "20").
+  // Prefix such generated names with '$' so they compile.
+  if (/^[0-9]/.test(name)) {
+    return `$${name}`;
+  }
   return name;
 }
 
