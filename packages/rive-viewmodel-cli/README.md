@@ -9,6 +9,26 @@ It uses `@rive-app/canvas-advanced` (the Rive JS/WASM runtime) to introspect `.r
 - Node.js 18+
 - npm 9+
 
+## Install
+
+### From npm (recommended)
+
+```bash
+npm install -g @rive-viewmodel/cli
+```
+
+Then use it from anywhere:
+
+```bash
+rive-gen --input path/to/MyAnimation.riv
+```
+
+Update to the latest published version:
+
+```bash
+npm install -g @rive-viewmodel/cli@latest
+```
+
 ## Usage
 
 ### From the repo root (development)
@@ -92,3 +112,21 @@ APIs are called to read the `.riv` file structure.
 
 The Mustache templates in `assets/templates/dart/` are shared between this CLI and
 the Flutter web app. Pass `--templates` to use a custom template directory.
+
+At build time (`npm run build`) these templates are copied into the package
+(`templates/dart/`, gitignored) so the published npm tarball is self-contained
+and works when installed globally.
+
+## Publishing (maintainers)
+
+The package is published to npm under the public `@rive-viewmodel` scope.
+
+```bash
+cd packages/rive-viewmodel-cli
+npm login                 # one-time, needs access to the @rive-viewmodel org
+npm version patch         # or minor / major — bumps version + git tag
+npm publish               # runs prepublishOnly (build) automatically
+```
+
+`prepublishOnly` rebuilds `dist/` and re-bundles `templates/` before every publish,
+and `publishConfig.access = public` makes the scoped package public.

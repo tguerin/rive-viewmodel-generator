@@ -3,14 +3,27 @@
   "version": "0.1.0",
   "description": "CLI to generate ViewModel code from Rive (.riv) files",
   "type": "module",
+  "license": "BSD-3-Clause",
   "bin": {
     "rive-gen": "./dist/bin/rive-gen.js"
   },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsc",
-    "dev": "node --loader tsx/esm bin/rive-gen.ts",
+    "build": "tsc && node scripts/copy-templates.mjs",
+    "dev": "node --import tsx bin/rive-gen.ts",
     "start": "node dist/bin/rive-gen.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@rive-app/canvas-advanced": "^2.36.0",

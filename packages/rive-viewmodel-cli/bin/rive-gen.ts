@@ -17,15 +17,20 @@ import { generate } from '../src/generator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Default templates directory:
-//   Source: bin/ (in repo)  → ../../assets/templates/dart
-//   Built:  dist/bin/ (in package) → ../../../../assets/templates/dart (repo root)
-// At runtime __dirname refers to the *compiled* location (dist/bin/), so we
-// need to go up 4 levels to reach the repo root.
-const DEFAULT_TEMPLATES_DIR = path.resolve(
-  __dirname,
-  '../../../../assets/templates/dart',
-);
+// Resolve the templates directory across every run context:
+//   1. Bundled inside the published package (dist/bin -> <pkg>/templates/dart).
+//      `templates/` is copied from the repo's shared assets at build time.
+//   2. Compiled from the repo (dist/bin -> repo-root/assets/templates/dart).
+//   3. Source via tsx (bin -> repo-root/assets/templates/dart).
+// The first candidate that exists on disk wins.
+const TEMPLATE_CANDIDATES = [
+  path.resolve(__dirname, '../../templates/dart'),
+  path.resolve(__dirname, '../../../../assets/templates/dart'),
+  path.resolve(__dirname, '../../assets/templates/dart'),
+];
+const DEFAULT_TEMPLATES_DIR =
+  TEMPLATE_CANDIDATES.find((dir) => fs.existsSync(dir)) ??
+  TEMPLATE_CANDIDATES[0];
 
 const program = new Command();
 
