@@ -262,7 +262,7 @@ B9:function B9(){},
 lP:function lP(){}},A={
 b9a(){var s,r,q=$.aBV
 if(q!=null)return q
-s=A.cg("Chrom(e|ium)\\/([0-9]+)\\.",!0,!1)
+s=A.cf("Chrom(e|ium)\\/([0-9]+)\\.",!0,!1)
 q=$.bt().gn3()
 r=s.jZ(q)
 if(r!=null){q=r.b[2]
@@ -276,7 +276,7 @@ aKA(){var s=v.G
 return s.Intl.v8BreakIterator!=null&&s.Intl.Segmenter!=null},
 b9e(){var s,r,q,p,o,n
 if($.bt().geM()!==B.bQ)return!1
-s=A.cg("Version\\/([0-9]+)\\.([0-9]+)",!0,!1)
+s=A.cf("Version\\/([0-9]+)\\.([0-9]+)",!0,!1)
 r=$.bt().gn3()
 q=s.jZ(r)
 if(q!=null){r=q.b
@@ -291,7 +291,7 @@ else r=!0
 return r}return!1},
 b9c(){var s,r,q
 if($.bt().geM()!==B.cY)return!1
-s=A.cg("Firefox\\/([0-9]+)",!0,!1)
+s=A.cf("Firefox\\/([0-9]+)",!0,!1)
 r=$.bt().gn3()
 q=s.jZ(r)
 if(q!=null){r=q.b[1]
@@ -1360,7 +1360,7 @@ a.c=g}n=c!=null&&c!==b
 if(r&&s&&n){a.c=c
 g=c}if(!(g===-1&&g===f)){e=a0.a
 if(A.aC5(i,h,new A.ch(g,f))!==e){m=B.c.u(h,".")
-for(g=A.cg(A.aCF(h),!0,!1).vj(0,e),g=new A.Fb(g.a,g.b,g.c),f=t.Qz,c=i.length;g.q();){l=g.d
+for(g=A.cf(A.aCF(h),!0,!1).vj(0,e),g=new A.Fb(g.a,g.b,g.c),f=t.Qz,c=i.length;g.q();){l=g.d
 b=(l==null?f.a(l):l).b
 r=b.index
 if(!(r>=0&&r+b[0].length<=c)){k=r+d-1
@@ -5999,7 +5999,7 @@ St(a){return A.dp(a)},
 b0e(a,b,c){var s=a.length
 if(b>=s)return""
 return A.aTP(a,b,c==null||c>s?s:c)},
-cg(a,b,c){return new A.v3(a,A.aAn(a,!1,b,c,!1,""))},
+cf(a,b,c){return new A.v3(a,A.aAn(a,!1,b,c,!1,""))},
 b9_(a,b){return a==null?b==null:a===b},
 Sn(a,b,c){var s=J.aZ(b)
 if(!s.q())return a
@@ -8814,7 +8814,7 @@ for(s=0;s<a.length;++s){r=a[s]
 q=B.c.aL(r,"no-")
 p=q?$.ts().i(0,B.c.bF(r,3)):$.ts().i(0,r)
 if(p!=null&&!p.d)o.p(0,p.a,!q)}return o},
-cf(a,b,c,d,e,f,g,h){return new A.Mv(e,c,g,d,h)},
+cg(a,b,c,d,e,f,g,h){return new A.Mv(e,c,g,d,h)},
 a7Z:function a7Z(a,b){this.a=a
 this.b=b},
 Mv:function Mv(a,b,c,d,e){var _=this
@@ -10402,7 +10402,7 @@ MB:function MB(a){this.a=a},
 a8H:function a8H(a){this.a=a},
 aKY(a,b){var s=b.length
 if(s===0)return a
-return A.b9T(a,A.cg("\\{(\\d+)\\}",!0,!1),new A.ayk(b),null)},
+return A.b9T(a,A.cf("\\{(\\d+)\\}",!0,!1),new A.ayk(b),null)},
 ayk:function ayk(a){this.a=a},
 aAK:function aAK(a){this.b=this.a=$
 this.c=a},
@@ -12799,7 +12799,7 @@ b08(a){var s,r,q,p,o,n,m,l,k,j,i=null,h="<unknown>"
 if(a==="<asynchronous suspension>")return B.a2A
 else if(a==="...")return B.a2B
 if(!B.c.aL(a,"#"))return A.b06(a)
-s=A.cg("^#(\\d+) +(.+) \\((.+?):?(\\d+){0,1}:?(\\d+){0,1}\\)$",!0,!1).jZ(a).b
+s=A.cf("^#(\\d+) +(.+) \\((.+?):?(\\d+){0,1}:?(\\d+){0,1}\\)$",!0,!1).jZ(a).b
 r=s[2]
 r.toString
 q=A.eX(r,".<anonymous closure>","")
@@ -26929,7 +26929,7 @@ ajx:function ajx(){},
 ajy:function ajy(a){this.a=a},
 ajw:function ajw(a){this.a=a},
 ajv:function ajv(a){this.a=a},
-b0l(a,b){var s=A.b([],t.Wj),r=A.cg("^[0-9a-zA-Z\\_\\-\\.]+$",!0,!1),q=new A.rb(a),p=new A.Dk(null,a,q,A.b([],t.Ra))
+b0l(a,b){var s=A.b([],t.Wj),r=A.cf("^[0-9a-zA-Z\\_\\-\\.]+$",!0,!1),q=new A.rb(a),p=new A.Dk(null,a,q,A.b([],t.Ra))
 if(a==="")p.e=-1
 else{q.q()
 p.e=q.d}p.w=p.r=123
@@ -27458,17 +27458,20 @@ avh:function avh(a){this.a=a},
 avw:function avw(a){this.a=a},
 avg:function avg(a,b){this.a=a
 this.b=b},
-axY(a){if(B.a1j.u(0,a.toLowerCase()))return a+"Property"
+axY(a){var s
+if(B.a1j.u(0,a.toLowerCase()))return a+"Property"
+s=A.cf("^[0-9]",!0,!1)
+if(s.b.test(a))return"$"+a
 return a},
 b6x(a){if(B.a14.u(0,a.toLowerCase()))return a+"Enum"
 return a},
 aB6(a){return a.length===0?"":a[0].toUpperCase()+B.c.bF(a,1)},
 jI(a){var s,r,q
 if(a.length===0)return""
-s=A.cg("^[a-zA-Z0-9]*$",!0,!1)
+s=A.cf("^[a-zA-Z0-9]*$",!0,!1)
 if(s.b.test(a))return a
-s=A.cg("[^a-zA-Z0-9]",!0,!1)
-s=B.c.mH(A.eX(a,s," "),A.cg("\\s+",!0,!1))
+s=A.cf("[^a-zA-Z0-9]",!0,!1)
+s=B.c.mH(A.eX(a,s," "),A.cf("\\s+",!0,!1))
 r=A.a7(s).h("aR<1>")
 q=A.T(new A.aR(s,new A.an5(),r),r.h("m.E"))
 if(q.length===0)return""
@@ -51450,7 +51453,7 @@ A.R5.prototype={}
 A.Xg.prototype={}
 A.fg.prototype={
 gm(a){return 1},
-gV(){var s,r,q=this.gkN().gxT(),p=A.cg("^#[0-9]* *Parser",!0,!1),o=A.amN().j(0).split("\n")
+gV(){var s,r,q=this.gkN().gxT(),p=A.cf("^#[0-9]* *Parser",!0,!1),o=A.amN().j(0).split("\n")
 for(s=o.length-2;s>=0;--s)if(B.c.aL(o[s],p)){r=q+" - "+o[s+1]
 q=r
 break}throw A.d(q)},
@@ -99071,11 +99074,11 @@ k=A.axY(A.jI(o))
 m=l.c
 j=l.d
 h.push(new A.nJ(k,o,m,n,j))}else B.b.a1(i,n)}return new A.asK(i,h)},
-aiT(a){var s,r=A.cg("^(.+?)_(\\d+)$",!0,!1).jZ(a)
+aiT(a){var s,r=A.cf("^(.+?)_(\\d+)$",!0,!1).jZ(a)
 if(r!=null){s=r.b[1]
 s.toString
 return s}return a},
-Kv(a){var s,r=A.cg("^(.+?)_(\\d+)$",!0,!1).jZ(a)
+Kv(a){var s,r=A.cf("^(.+?)_(\\d+)$",!0,!1).jZ(a)
 if(r!=null){s=r.b[2]
 s.toString
 s=A.m3(s,null)
@@ -99149,7 +99152,7 @@ return A.a3($.Jq().a6B(A.p(b)+"/"+A.p(n)+".mustache"),$async$uT)
 case 9:m=a3
 g=m
 f=A.b([],j)
-e=A.cg("^[0-9a-zA-Z\\_\\-\\.]+$",!0,!1)
+e=A.cf("^[0-9a-zA-Z\\_\\-\\.]+$",!0,!1)
 d=new A.Dk(null,g,new A.rb(g),A.b([],i))
 d.afC(g,null,"{{ }}")
 k.p(0,n,new A.wm(g,new A.Pk(g,!1,null,"{{ }}",d,f,e).a7b(0),null))
@@ -99264,7 +99267,7 @@ return s},
 agC(a){var s=A.a7(a).h("a9<1,av<o,@>>")
 s=A.T(new A.a9(a,new A.anz(this),s),s.h("ai.E"))
 return s},
-aiU(a){var s,r=A.cg("^(.+?)_(\\d+)$",!0,!1).jZ(a)
+aiU(a){var s,r=A.cf("^(.+?)_(\\d+)$",!0,!1).jZ(a)
 if(r!=null){s=r.b[2]
 s.toString
 s=A.m3(s,null)
@@ -107182,8 +107185,8 @@ p=new A.LT(q,q.grm(0),p)
 p.a0I()
 return p})
 s($,"bfa","az7",()=>new A.axG().$0())
-s($,"be2","aNv",()=>A.cg("[a-z0-9\\s]+",!1,!1))
-s($,"be3","aNw",()=>A.cg("\\b\\d",!0,!1))
+s($,"be2","aNv",()=>A.cf("[a-z0-9\\s]+",!1,!1))
+s($,"be3","aNw",()=>A.cf("\\b\\d",!0,!1))
 s($,"bgs","Jp",()=>A.b88(1000,500))
 s($,"bgt","tt",()=>{var q=A.aEU($.Jp(),"2d")
 q.toString
@@ -107220,7 +107223,7 @@ s($,"beK","aO_",()=>new A.awX().$0())
 s($,"bef","aNG",()=>A.aT_(A.hB(A.b([-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-2,-2,-2,-2,-2,62,-2,62,-2,63,52,53,54,55,56,57,58,59,60,61,-2,-2,-2,-1,-2,-2,-2,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-2,-2,-2,-2,63,-2,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,-2,-2,-2,-2,-2],t.t))))
 s($,"beM","a2D",()=>A.b2A())
 s($,"ber","aNP",()=>typeof FinalizationRegistry=="function"?FinalizationRegistry:null)
-s($,"beH","aNX",()=>A.cg("^[\\-\\.0-9A-Z_a-z~]*$",!0,!1))
+s($,"beH","aNX",()=>A.cf("^[\\-\\.0-9A-Z_a-z~]*$",!0,!1))
 s($,"beI","aNY",()=>typeof URLSearchParams=="function")
 s($,"bf9","es",()=>A.tq(B.a8a))
 s($,"bdv","Jh",()=>{A.aTN()
@@ -107258,85 +107261,85 @@ s($,"baT","ayS",()=>A.cP("3.9.0"))
 s($,"baU","aLP",()=>$.aOF())
 s($,"bfD","aOF",()=>A.ac(["augmentations",$.aD0(),"class-modifiers",$.k1(),"const-functions",$.aLQ(),"constant-update-2018",$.aLR(),"constructor-tearoffs",$.a2q(),"control-flow-collections",$.aLS(),"digit-separators",$.a2r(),"dot-shorthands",$.J3(),"enhanced-enums",$.J4(),"enhanced-parts",$.aD1(),"extension-methods",$.aLT(),"generic-metadata",$.ayT(),"getter-setter-error",$.aLU(),"inference-update-1",$.aLV(),"inference-update-2",$.aLW(),"inference-update-3",$.aLX(),"inference-update-4",$.aLY(),"inference-using-bounds",$.aLZ(),"inline-class",$.ayU(),"macros",$.J5(),"named-arguments-anywhere",$.aD2(),"native-assets",$.aM_(),"non-nullable",$.aM0(),"nonfunction-type-aliases",$.ayV(),"null-aware-elements",$.a2s(),"patterns",$.aD3(),"record-use",$.aM1(),"records",$.a2t(),"sealed-class",$.a2u(),"set-literals",$.aM2(),"sound-flow-analysis",$.aM3(),"spread-collections",$.aM4(),"super-parameters",$.ayW(),"test-experiment",$.aM5(),"triple-shift",$.a2v(),"unnamed-libraries",$.ayX(),"unquoted-imports",$.aM6(),"variance",$.aD4(),"wildcard-variables",$.aM7()],t.N,A.ag("Mv")))
 s($,"baV","aD0",()=>{var q=A.cP("3.6.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Augmentations - enhancing declarations from outside","augmentations",q,0,!1,!1,null)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Augmentations - enhancing declarations from outside","augmentations",q,0,!1,!1,null)})
 s($,"baW","k1",()=>{var q=A.cP("3.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Class modifiers","class-modifiers",null,1,!0,!0,q)})
-s($,"baX","aLQ",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Allow more of the Dart language to be executed in const expressions.","const-functions",null,2,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Class modifiers","class-modifiers",null,1,!0,!0,q)})
+s($,"baX","aLQ",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Allow more of the Dart language to be executed in const expressions.","const-functions",null,2,!1,!1,null))
 s($,"baY","aLR",()=>{var q=A.cP("2.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Enhanced constant expressions","constant-update-2018",null,3,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Enhanced constant expressions","constant-update-2018",null,3,!0,!0,q)})
 s($,"baZ","a2q",()=>{var q=A.cP("2.15.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Allow constructor tear-offs and explicit generic instantiations.","constructor-tearoffs",null,4,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Allow constructor tear-offs and explicit generic instantiations.","constructor-tearoffs",null,4,!0,!0,q)})
 s($,"bb_","aLS",()=>{var q=A.cP("2.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Control Flow Collections","control-flow-collections",null,5,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Control Flow Collections","control-flow-collections",null,5,!0,!0,q)})
 s($,"bb0","a2r",()=>{var q=A.cP("3.6.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Number literals with digit separators.","digit-separators",null,6,!0,!0,q)})
-s($,"bb1","J3",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Shorter dot syntax for static accesses.","dot-shorthands",null,7,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Number literals with digit separators.","digit-separators",null,6,!0,!0,q)})
+s($,"bb1","J3",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Shorter dot syntax for static accesses.","dot-shorthands",null,7,!1,!1,null))
 s($,"bb2","J4",()=>{var q=A.cP("2.17.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Enhanced Enums","enhanced-enums",null,8,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Enhanced Enums","enhanced-enums",null,8,!0,!0,q)})
 s($,"bb3","aD1",()=>{var q=A.cP("3.6.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Generalize parts to be nested and have exports/imports.","enhanced-parts",q,9,!1,!1,null)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Generalize parts to be nested and have exports/imports.","enhanced-parts",q,9,!1,!1,null)})
 s($,"bb4","aLT",()=>{var q=A.cP("2.6.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Extension Methods","extension-methods",null,10,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Extension Methods","extension-methods",null,10,!0,!0,q)})
 s($,"bb5","ayT",()=>{var q=A.cP("2.14.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Allow annotations to accept type arguments; also allow generic function types as type arguments.","generic-metadata",null,11,!0,!0,q)})
-s($,"bb6","aLU",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Stop reporting errors about mismatching types in a getter/setter pair.","getter-setter-error",null,12,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Allow annotations to accept type arguments; also allow generic function types as type arguments.","generic-metadata",null,11,!0,!0,q)})
+s($,"bb6","aLU",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Stop reporting errors about mismatching types in a getter/setter pair.","getter-setter-error",null,12,!1,!1,null))
 s($,"bb7","aLV",()=>{var q=A.cP("2.18.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Horizontal type inference for function expressions passed to generic invocations.","inference-update-1",null,13,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Horizontal type inference for function expressions passed to generic invocations.","inference-update-1",null,13,!0,!0,q)})
 s($,"bb8","aLW",()=>{var q=A.cP("3.2.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Type promotion for fields","inference-update-2",null,14,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Type promotion for fields","inference-update-2",null,14,!0,!0,q)})
 s($,"bb9","aLX",()=>{var q=A.cP("3.4.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Better handling of conditional expressions, and switch expressions.","inference-update-3",null,15,!0,!0,q)})
-s($,"bba","aLY",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"A bundle of updates to type inference.","inference-update-4",null,16,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Better handling of conditional expressions, and switch expressions.","inference-update-3",null,15,!0,!0,q)})
+s($,"bba","aLY",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"A bundle of updates to type inference.","inference-update-4",null,16,!1,!1,null))
 s($,"bbb","aLZ",()=>{var q=A.cP("3.7.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Use type parameter bounds more extensively in type inference.","inference-using-bounds",null,17,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Use type parameter bounds more extensively in type inference.","inference-using-bounds",null,17,!0,!0,q)})
 s($,"bbc","ayU",()=>{var q=A.cP("3.3.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Extension Types","inline-class",null,18,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Extension Types","inline-class",null,18,!0,!0,q)})
 s($,"bbd","J5",()=>{var q=A.cP("3.3.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Static meta-programming","macros",q,19,!1,!1,null)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Static meta-programming","macros",q,19,!1,!1,null)})
 s($,"bbe","aD2",()=>{var q=A.cP("2.17.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Named Arguments Anywhere","named-arguments-anywhere",null,20,!0,!0,q)})
-s($,"bbf","aM_",()=>A.cf(A.b(["main","dev"],t.s),"Compile and bundle native assets.","native-assets",null,21,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Named Arguments Anywhere","named-arguments-anywhere",null,20,!0,!0,q)})
+s($,"bbf","aM_",()=>A.cg(A.b(["main","dev"],t.s),"Compile and bundle native assets.","native-assets",null,21,!1,!1,null))
 s($,"bbg","aM0",()=>{var q=A.cP("2.10.0"),p=A.cP("2.12.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Non Nullable by default","non-nullable",q,22,!0,!0,p)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Non Nullable by default","non-nullable",q,22,!0,!0,p)})
 s($,"bbh","ayV",()=>{var q=A.cP("2.13.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Type aliases define a <type>, not just a <functionType>","nonfunction-type-aliases",null,23,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Type aliases define a <type>, not just a <functionType>","nonfunction-type-aliases",null,23,!0,!0,q)})
 s($,"bbi","a2s",()=>{var q=A.cP("3.8.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Null-aware elements and map entries in collections.","null-aware-elements",null,24,!0,!1,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Null-aware elements and map entries in collections.","null-aware-elements",null,24,!0,!1,q)})
 s($,"bbj","aD3",()=>{var q=A.cP("3.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Patterns","patterns",null,25,!0,!0,q)})
-s($,"bbk","aM1",()=>A.cf(A.b(["main","dev"],t.s),"Output arguments used by static functions.","record-use",null,26,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Patterns","patterns",null,25,!0,!0,q)})
+s($,"bbk","aM1",()=>A.cg(A.b(["main","dev"],t.s),"Output arguments used by static functions.","record-use",null,26,!1,!1,null))
 s($,"bbl","a2t",()=>{var q=A.cP("3.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Records","records",null,27,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Records","records",null,27,!0,!0,q)})
 s($,"bbm","a2u",()=>{var q=A.cP("3.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Sealed class","sealed-class",null,28,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Sealed class","sealed-class",null,28,!0,!0,q)})
 s($,"bbn","aM2",()=>{var q=A.cP("2.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Set Literals","set-literals",null,29,!0,!0,q)})
-s($,"bbo","aM3",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Assume sound null safety when computing type promotion, reachability, and definite assignment.","sound-flow-analysis",null,30,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Set Literals","set-literals",null,29,!0,!0,q)})
+s($,"bbo","aM3",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Assume sound null safety when computing type promotion, reachability, and definite assignment.","sound-flow-analysis",null,30,!1,!1,null))
 s($,"bbp","aM4",()=>{var q=A.cP("2.0.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Spread Collections","spread-collections",null,31,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Spread Collections","spread-collections",null,31,!0,!0,q)})
 s($,"bbq","ayW",()=>{var q=A.cP("2.17.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Super-Initializer Parameters","super-parameters",null,32,!0,!0,q)})
-s($,"bbr","aM5",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Has no effect. Can be used for testing the --enable-experiment command line functionality.","test-experiment",null,33,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Super-Initializer Parameters","super-parameters",null,32,!0,!0,q)})
+s($,"bbr","aM5",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Has no effect. Can be used for testing the --enable-experiment command line functionality.","test-experiment",null,33,!1,!1,null))
 s($,"bbs","a2v",()=>{var q=A.cP("2.14.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Triple-shift operator","triple-shift",null,34,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Triple-shift operator","triple-shift",null,34,!0,!0,q)})
 s($,"bbt","ayX",()=>{var q=A.cP("2.19.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Unnamed libraries","unnamed-libraries",null,35,!0,!0,q)})
-s($,"bbu","aM6",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Shorter import syntax.","unquoted-imports",null,36,!1,!1,null))
-s($,"bbv","aD4",()=>A.cf(A.b(["stable","beta","dev","main"],t.s),"Sound variance","variance",null,37,!1,!1,null))
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Unnamed libraries","unnamed-libraries",null,35,!0,!0,q)})
+s($,"bbu","aM6",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Shorter import syntax.","unquoted-imports",null,36,!1,!1,null))
+s($,"bbv","aD4",()=>A.cg(A.b(["stable","beta","dev","main"],t.s),"Sound variance","variance",null,37,!1,!1,null))
 s($,"bbw","aM7",()=>{var q=A.cP("3.7.0")
-return A.cf(A.b(["stable","beta","dev","main"],t.s),"Local declarations and parameters named `_` are non-binding.","wildcard-variables",null,38,!0,!0,q)})
+return A.cg(A.b(["stable","beta","dev","main"],t.s),"Local declarations and parameters named `_` are non-binding.","wildcard-variables",null,38,!0,!0,q)})
 r($,"bfE","ts",()=>$.aLP())
 s($,"bdg","aN7",()=>A.afk(0))
-s($,"bg9","aP2",()=>A.cg("^// dart format width=(\\d+)$",!0,!1))
+s($,"bg9","aP2",()=>A.cf("^// dart format width=(\\d+)$",!0,!1))
 s($,"bat","aLH",()=>A.c6(3,8,0))
 s($,"bau","aLI",()=>A.c6(3,6,0))
 s($,"bf8","aOi",()=>A.aBW("\x1b[1;30m"))
 s($,"bfG","aDs",()=>A.aBW("\x1b[0m"))
 s($,"beY","aOb",()=>A.aBW("\x1b[1m"))
-s($,"bdE","aNf",()=>A.cg("\\r\\n?|\\n",!0,!1))
-s($,"bg6","aP_",()=>A.cg("[a-zA-Z0-9_]$",!0,!1))
+s($,"bdE","aNf",()=>A.cf("\\r\\n?|\\n",!0,!1))
+s($,"bg6","aP_",()=>A.cf("[a-zA-Z0-9_]$",!0,!1))
 s($,"bdf","aDg",()=>A.vQ())
-s($,"bds","aNb",()=>A.cg("\\r\\n?|\\n",!0,!1))
+s($,"bds","aNb",()=>A.cf("\\r\\n?|\\n",!0,!1))
 s($,"baH","aD_",()=>new A.a6y(A.al(A.ag("~(ke)"))))
 s($,"bbW","aMq",()=>new A.H())
 s($,"bfe","aOm",()=>A.amI(1,1,500))
@@ -107352,7 +107355,7 @@ s($,"bem","aNL",()=>A.b6l(0))
 s($,"bf3","a2F",()=>A.nK(null,t.N))
 s($,"bf4","aDm",()=>A.b0a())
 s($,"bed","aNF",()=>A.afk(8))
-s($,"bdu","aNc",()=>A.cg("^\\s*at ([^\\s]+).*$",!0,!1))
+s($,"bdu","aNc",()=>A.cf("^\\s*at ([^\\s]+).*$",!0,!1))
 s($,"bgl","aDx",()=>A.b6(4294967295))
 s($,"bgk","aDw",()=>A.b6(3707764736))
 s($,"beA","aNU",()=>A.eE(0.75,1,t.i))
@@ -107383,8 +107386,8 @@ s($,"bes","aNQ",()=>A.eE(0.875,1,t.i).fb(A.ek(B.dR)))
 s($,"bdG","aNh",()=>A.b0r())
 s($,"bdF","aNg",()=>new A.We(A.y(A.ag("x4"),t.we),5,A.ag("We<x4,iV>")))
 s($,"bcU","az0",()=>A.aSX(4))
-s($,"bec","aNE",()=>A.cg("[\\p{Space_Separator}\\p{Punctuation}]",!0,!0))
-s($,"beF","aNW",()=>A.cg("\\p{Space_Separator}",!0,!0))
+s($,"bec","aNE",()=>A.cf("[\\p{Space_Separator}\\p{Punctuation}]",!0,!0))
+s($,"beF","aNW",()=>A.cf("\\p{Space_Separator}",!0,!0))
 r($,"bdb","aN3",()=>B.JI)
 r($,"bdd","aN5",()=>{var q=null
 return A.aIc(q,B.kw,q,q,q,q,"sans-serif",q,q,18,q,q,q,q,q,q,q,q,q,q,q)})
@@ -107665,15 +107668,15 @@ g=i[1]
 f=i[2]
 e=[400*h/(h+27.13),400*g/(g+27.13),400*f/(f+27.13)]
 return new A.aoY(k,(40*e[0]+20*e[1]+e[2])/20*j,j,j,b,1,q,l,A.IZ(l,0.25),1.48+p)})
-s($,"bfb","aOj",()=>A.cg("^[0-9]+$",!0,!1))
+s($,"bfb","aOj",()=>A.cf("^[0-9]+$",!0,!1))
 s($,"bgf","a2H",()=>new A.Ld($.az3(),null))
-s($,"bdz","aNd",()=>new A.ahr(A.cg("/",!0,!1),A.cg("[^/]$",!0,!1),A.cg("^/",!0,!1)))
-s($,"bdB","Jj",()=>new A.apt(A.cg("[/\\\\]",!0,!1),A.cg("[^/\\\\]$",!0,!1),A.cg("^(\\\\\\\\[^\\\\]+\\\\[^\\\\/]+|[a-zA-Z]:[/\\\\])",!0,!1),A.cg("^[/\\\\](?![/\\\\])",!0,!1)))
-s($,"bdA","Ji",()=>new A.aoH(A.cg("/",!0,!1),A.cg("(^[a-zA-Z][-+.a-zA-Z\\d]*://|[^/])$",!0,!1),A.cg("[a-zA-Z][-+.a-zA-Z\\d]*://[^/]*",!0,!1),A.cg("^/",!0,!1)))
+s($,"bdz","aNd",()=>new A.ahr(A.cf("/",!0,!1),A.cf("[^/]$",!0,!1),A.cf("^/",!0,!1)))
+s($,"bdB","Jj",()=>new A.apt(A.cf("[/\\\\]",!0,!1),A.cf("[^/\\\\]$",!0,!1),A.cf("^(\\\\\\\\[^\\\\]+\\\\[^\\\\/]+|[a-zA-Z]:[/\\\\])",!0,!1),A.cf("^[/\\\\](?![/\\\\])",!0,!1)))
+s($,"bdA","Ji",()=>new A.aoH(A.cf("/",!0,!1),A.cf("(^[a-zA-Z][-+.a-zA-Z\\d]*://|[^/])$",!0,!1),A.cf("[a-zA-Z][-+.a-zA-Z\\d]*://[^/]*",!0,!1),A.cf("^/",!0,!1)))
 s($,"bdy","az3",()=>A.b0f())
 s($,"bcZ","aDc",()=>A.aF5(t.K))
-s($,"bgz","aPc",()=>A.cg("^(\\d+)\\.(\\d+)\\.(\\d+)(-([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*))?(\\+([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*))?",!0,!1))
-s($,"bge","aP5",()=>A.cg($.aPc().a+"$",!0,!1))
+s($,"bgz","aPc",()=>A.cf("^(\\d+)\\.(\\d+)\\.(\\d+)(-([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*))?(\\+([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*))?",!0,!1))
+s($,"bge","aP5",()=>A.cf($.aPc().a+"$",!0,!1))
 s($,"bdW","aNt",()=>A.Am(new A.apa(),t.K))
 s($,"be_","a2B",()=>A.ex(null,null,null,t.gl,t.ke))
 s($,"bdZ","az5",()=>A.ex(null,null,null,t.gl,t.Q2))
