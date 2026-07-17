@@ -4,6 +4,43 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
   factory {{className}}.fromViewModel(ViewModelInstance viewModel) =
       {{className}}._;
 
+{{#hasInstances}}
+  /// The name of the `{{viewModelRuntimeName}}` view model in the Rive file.
+  static const String viewModelName = '{{viewModelRuntimeName}}';
+
+  /// Creates the named [instance] preset of the `{{viewModelRuntimeName}}`
+  /// view model from [file].
+  factory {{className}}.fromInstance(File file, {{instanceEnumName}} instance) {
+    return {{className}}._(_instanceByName(file, instance.instanceName));
+  }
+
+  /// Creates the default instance of the `{{viewModelRuntimeName}}` view model
+  /// from [file].
+  factory {{className}}.fromDefaultInstance(File file) {
+    final viewModel = file.viewModelByName(viewModelName);
+    if (viewModel == null) {
+      throw StateError('View model "$viewModelName" not found in the Rive file.');
+    }
+    final instance = viewModel.createDefaultInstance();
+    if (instance == null) {
+      throw StateError('Default instance of "$viewModelName" could not be created.');
+    }
+    return {{className}}._(instance);
+  }
+
+  static ViewModelInstance _instanceByName(File file, String name) {
+    final viewModel = file.viewModelByName(viewModelName);
+    if (viewModel == null) {
+      throw StateError('View model "$viewModelName" not found in the Rive file.');
+    }
+    final instance = viewModel.createInstanceByName(name);
+    if (instance == null) {
+      throw StateError('Instance "$name" not found on view model "$viewModelName".');
+    }
+    return instance;
+  }
+
+{{/hasInstances}}
   final ViewModelInstance _viewModel;
   bool _disposed = false;
 

@@ -40,6 +40,14 @@ export interface EnumModel {
   values: EnumValueModel[];
 }
 
+/** A named view model instance (a preset authored in the Rive editor). */
+export interface InstanceModel {
+  /** Sanitized, Dart-legal enum value identifier (e.g. `cashEuros`). */
+  name: string;
+  /** Original instance name used with `createInstanceByName` (e.g. `cash_euros`). */
+  value: string;
+}
+
 export interface ViewModelModel {
   name: string;
   className: string;
@@ -47,6 +55,11 @@ export interface ViewModelModel {
   listProperties: ListPropertyModel[];
   nestedViewModels: ViewModelModel[];
   enums: EnumModel[];
+  /** Named instances; only populated for top-level view models. */
+  instances: InstanceModel[];
+  /** The view model's original name in the file (e.g. `VmCoin`), used with
+   * `viewModelByName`. Only meaningful when `instances` is non-empty. */
+  runtimeName?: string;
 }
 
 export interface StateMachineModel {

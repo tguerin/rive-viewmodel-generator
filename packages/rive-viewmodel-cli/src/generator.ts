@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import {
   EnumModel,
+  InstanceModel,
   ListPropertyModel,
   PropertyModel,
   PropertyType,
@@ -56,6 +57,36 @@ function buildEnums(model: RiveFileModel): object[] {
       last: i === e.values.length - 1,
     })),
   }));
+}
+
+/**
+ * The name of the instance enum generated for a view model, derived from its
+ * class name (e.g. `VmCoinViewModel` -> `VmCoinInstance`).
+ */
+function instanceEnumName(className: string): string {
+  const base = className.endsWith('ViewModel')
+    ? className.slice(0, -'ViewModel'.length)
+    : className;
+  return `${base}Instance`;
+}
+
+function buildInstanceEnums(model: RiveFileModel): object[] {
+  const result: object[] = [];
+  for (const vm of model.viewModels) {
+    const instances: InstanceModel[] = vm.instances ?? [];
+    if (instances.length === 0) continue;
+    const enumName = instanceEnumName(vm.className);
+    result.push({
+      name: enumName,
+      enumName,
+      values: instances.map((instance, i) => ({
+        name: instance.name,
+        argument: instance.value,
+        last: i === instances.length - 1,
+      })),
+    });
+  }
+  return result;
 }
 
 function buildArtboards(model: RiveFileModel): object[] {
@@ -165,6 +196,9 @@ function buildViewModelEntry(
     hasImages:
       vm.properties.some((p) => p.type === PropertyType.image) ||
       vm.listProperties.some((lp) => lp.itemType === PropertyType.image),
+    hasInstances: (vm.instances ?? []).length > 0,
+    instanceEnumName: instanceEnumName(vm.className),
+    viewModelRuntimeName: vm.runtimeName ?? vm.name,
     properties: buildProperties(vm.properties),
     listProperties: buildListProperties(vm.listProperties),
     useInterface,
@@ -199,6 +233,7 @@ function loadTemplates(
 ): { mainTemplate: string; partials: Record<string, string> } {
   const partialNames = [
     'enum',
+    'instance_enum',
     'state_machine_enum',
     'sealed_artboard_class',
     'artboard_class',
@@ -232,6 +267,7 @@ export function generate(
   const { mainTemplate, partials } = loadTemplates(templatesDir);
 
   const enums = buildEnums(model);
+  const instanceEnums = buildInstanceEnums(model);
   const artboards = buildArtboards(model);
   const viewModels = buildViewModels(model, useInterface);
   const needPaintingImport = (viewModels as { hasImages?: boolean }[]).some(
@@ -240,6 +276,7 @@ export function generate(
 
   const context = {
     enums,
+    instanceEnums,
     artboards,
     viewModels,
     needPaintingImport,

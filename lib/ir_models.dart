@@ -55,6 +55,18 @@ class EnumValueModel {
   EnumValueModel({required this.name, required this.value});
 }
 
+/// A named view model instance (a preset authored in the Rive editor).
+class InstanceModel {
+  /// Sanitized, Dart-legal enum value identifier (e.g. `cashEuros`).
+  final String name;
+
+  /// Original instance name used at runtime with `createInstanceByName`
+  /// (e.g. `cash_euros`).
+  final String value;
+
+  InstanceModel({required this.name, required this.value});
+}
+
 class EnumModel {
   final String name;
   final List<EnumValueModel> values;
@@ -70,6 +82,15 @@ class ViewModelModel {
   final List<ViewModelModel> nestedViewModels;
   final List<EnumModel> enums;
 
+  /// Named instances (presets) authored for this view model. Only populated
+  /// for top-level view models, which can be resolved from the file by name.
+  final List<InstanceModel> instances;
+
+  /// The view model's original name in the Rive file (e.g. `VmCoin`), used at
+  /// runtime with `File.viewModelByName`. Only meaningful when [instances] is
+  /// non-empty.
+  final String? runtimeName;
+
   ViewModelModel({
     required this.name,
     required this.className,
@@ -77,9 +98,12 @@ class ViewModelModel {
     List<ListPropertyModel>? listProperties,
     List<ViewModelModel>? nestedViewModels,
     List<EnumModel>? enums,
+    List<InstanceModel>? instances,
+    this.runtimeName,
   }) : listProperties = listProperties ?? [],
        nestedViewModels = nestedViewModels ?? [],
-       enums = enums ?? [];
+       enums = enums ?? [],
+       instances = instances ?? [];
 }
 
 class StateMachineModel {
