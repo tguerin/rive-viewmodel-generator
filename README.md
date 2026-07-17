@@ -13,6 +13,7 @@ Check out the live demo at [tguerin.github.io/rive-viewmodel-generator](https://
 - Drag and drop interface for Rive files
 - Generates type-safe Dart view model classes
 - Supports all Rive property types (boolean, number, string, color, trigger, enum, nested view model)
+- Generates a typed instance enum plus `fromInstance` / `fromDefaultInstance` factories for named view-model instances (presets)
 - Support Artboards and StateMachines generation
 - Generates stream getters for reactive programming
 - Works on both web and desktop platforms
@@ -296,6 +297,19 @@ viewModel.orientationStream.listen((orientation) {
   print('Orientation changed to: $orientation');
 });
 ```
+
+4. **Named instances (presets)**: When a view model declares named instances in
+   the Rive editor, the generator emits a typed enum and factories so you can
+   select a preset without string lookups:
+```dart
+// enum WidgetInstance { primary, secondary, compact }
+final widget = WidgetViewModel.fromInstance(file, WidgetInstance.primary);
+widget.bind(controller.stateMachine);
+
+// Or the default instance:
+final defaultWidget = WidgetViewModel.fromDefaultInstance(file);
+```
+   View models with no named instances are generated exactly as before.
 
 ## Requirements
 

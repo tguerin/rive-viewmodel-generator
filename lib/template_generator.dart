@@ -24,6 +24,7 @@ class TemplateGenerator {
 
     final templateNames = [
       'enum',
+      'instance_enum',
       'state_machine_enum',
       'sealed_artboard_class',
       'artboard_class',
@@ -74,12 +75,14 @@ class TemplateGenerator {
 
   Map<String, dynamic> _buildContext(RiveFileModel model) {
     final enums = _buildEnums(model);
+    final instanceEnums = _buildInstanceEnums(model);
     final artboards = _buildArtboards(model);
     final viewModels = _buildViewModels(model);
     final needPaintingImport = viewModels.any((vm) => vm['hasImages'] == true);
     final useModernRive = riveVersion == RiveVersion.modern;
     return {
       'enums': enums,
+      'instanceEnums': instanceEnums,
       'artboards': artboards,
       'viewModels': viewModels,
       'needPaintingImport': needPaintingImport,
@@ -87,6 +90,41 @@ class TemplateGenerator {
       'useLegacyRive': !useModernRive,
       'useInterface': useInterface,
     };
+  }
+
+  /// The name of the instance enum generated for a view model, derived from
+  /// its class name (e.g. `WidgetViewModel` -> `WidgetInstance`).
+  static String _instanceEnumName(String className) {
+    final base =
+        className.endsWith('ViewModel')
+            ? className.substring(0, className.length - 'ViewModel'.length)
+            : className;
+    return '${base}Instance';
+  }
+
+  /// Builds one instance enum per top-level view model that declares named
+  /// instances.
+  List<Map<String, dynamic>> _buildInstanceEnums(RiveFileModel model) {
+    final result = <Map<String, dynamic>>[];
+    for (final viewModel in model.viewModels) {
+      if (viewModel.instances.isEmpty) continue;
+      final enumName = _instanceEnumName(viewModel.className);
+      result.add({
+        'name': enumName,
+        'enumName': enumName,
+        'values':
+            viewModel.instances
+                .map(
+                  (instance) => {
+                    'name': instance.name,
+                    'argument': instance.value,
+                    'last': instance == viewModel.instances.last,
+                  },
+                )
+                .toList(),
+      });
+    }
+    return result;
   }
 
   List<Map<String, dynamic>> _buildEnums(RiveFileModel model) {
@@ -221,6 +259,9 @@ class TemplateGenerator {
           viewModel.listProperties.any(
             (lp) => lp.itemType == PropertyType.image,
           ),
+      'hasInstances': viewModel.instances.isNotEmpty,
+      'instanceEnumName': _instanceEnumName(viewModel.className),
+      'viewModelRuntimeName': viewModel.runtimeName ?? viewModel.name,
       'properties': _buildProperties(viewModel.properties),
       'listProperties': _buildListProperties(viewModel.listProperties),
       'useInterface': useInterface,

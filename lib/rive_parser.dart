@@ -135,6 +135,12 @@ class RiveParser {
   final Uint8List _bytes;
   final String _fileName;
 
+  /// Property signature (`name:type`) of every top-level view model, keyed by
+  /// its generated class name. Used to resolve a nested `viewModel`-typed
+  /// property back to its top-level definition by shape, since the Rive API
+  /// does not expose a nested instance's view-model type name.
+  final Map<String, Set<String>> _viewModelShapes = {};
+
   RiveParser(this._bytes, this._fileName);
 
   Future<String> generateCode(
@@ -203,10 +209,17 @@ class RiveParser {
     final viewModels = <ViewModelModel>[];
     final existingClasses = <String>{};
     final generatedClasses = <String>{};
+    _viewModelShapes.clear();
     for (var i = 0; i < riveFile.viewModelCount; i++) {
       final viewModel = riveFile.viewModelByIndex(i);
       if (viewModel != null) {
-        existingClasses.add(viewModel.name.toClassName().append('ViewModel'));
+        final className = viewModel.name.toClassName().append('ViewModel');
+        existingClasses.add(className);
+        final instance = viewModel.createDefaultInstance();
+        if (instance != null) {
+          _viewModelShapes[className] = _shapeOf(instance);
+          instance.dispose();
+        }
       }
     }
 
@@ -219,6 +232,8 @@ class RiveParser {
           riveFile,
           existingClasses,
           generatedClasses,
+          instances: _parseInstances(viewModel),
+          runtimeName: viewModel.name,
         );
         if (model != null) {
           viewModels.add(model);
@@ -234,6 +249,45 @@ class RiveParser {
     );
   }
 
+  /// The property signature (`name:type`) of a view model instance.
+  Set<String> _shapeOf(ViewModelInstance instance) =>
+      instance.properties.map((p) => '${p.name}:${p.type}').toSet();
+
+  /// Resolves a nested `viewModel`-typed property to a top-level view model
+  /// class by matching property shapes. Returns the class name only when
+  /// exactly one top-level view model has the same shape (avoids guessing when
+  /// two definitions are structurally identical); otherwise returns null so the
+  /// caller falls back to the name-based heuristic.
+  String? _matchNestedClassByShape(ViewModelInstance nested) {
+    final shape = _shapeOf(nested);
+    String? match;
+    for (final entry in _viewModelShapes.entries) {
+      final candidate = entry.value;
+      if (candidate.length == shape.length && candidate.containsAll(shape)) {
+        if (match != null) return null; // ambiguous
+        match = entry.key;
+      }
+    }
+    return match;
+  }
+
+  /// Enumerates the named instances (presets) of a top-level [viewModel],
+  /// deduplicating any that sanitize to the same Dart identifier.
+  List<InstanceModel> _parseInstances(ViewModel viewModel) {
+    final instances = <InstanceModel>[];
+    final seenIds = <String>{};
+    for (var k = 0; k < viewModel.instanceCount; k++) {
+      final instance = viewModel.createInstanceByIndex(k);
+      final rawName = instance?.name;
+      instance?.dispose();
+      if (rawName == null || rawName.isEmpty) continue;
+      final id = _sanitizePropertyName(rawName.toCamelCase());
+      if (id.isEmpty || !seenIds.add(id)) continue;
+      instances.add(InstanceModel(name: id, value: rawName));
+    }
+    return instances;
+  }
+
   ViewModelModel? _parseViewModelToIR(
     String className,
     ViewModelInstance viewModel,
@@ -241,6 +295,8 @@ class RiveParser {
     Set<String> existingClasses,
     Set<String> generatedClasses, {
     String? parent,
+    List<InstanceModel> instances = const [],
+    String? runtimeName,
   }) {
     if (className.isEmpty) return null;
     if (generatedClasses.contains(className)) return null;
@@ -299,12 +355,17 @@ class RiveParser {
           final nestedViewModel = viewModel.viewModel(property.name);
           if (nestedViewModel != null) {
             final propertyNameAsClass = property.name.toClassName();
-            final nestedClassName = existingClasses.firstWhere(
-              (className) => propertyNameAsClass.startsWith(
-                className.replaceAll('ViewModel', '').replaceAll('Vm', ''),
-              ),
-              orElse: () => propertyNameAsClass,
-            );
+            // Prefer a shape match to the real top-level definition (so the
+            // nested property reuses e.g. WidgetViewModel and its instance
+            // support); fall back to the name-based heuristic otherwise.
+            final nestedClassName =
+                _matchNestedClassByShape(nestedViewModel) ??
+                existingClasses.firstWhere(
+                  (className) => propertyNameAsClass.startsWith(
+                    className.replaceAll('ViewModel', '').replaceAll('Vm', ''),
+                  ),
+                  orElse: () => propertyNameAsClass,
+                );
             final nestedModel = _parseViewModelToIR(
               nestedClassName,
               nestedViewModel,
@@ -422,6 +483,8 @@ class RiveParser {
       listProperties: listProperties,
       nestedViewModels: nestedViewModels,
       enums: enums,
+      instances: instances,
+      runtimeName: runtimeName,
     );
   }
 
