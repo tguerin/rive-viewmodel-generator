@@ -16,6 +16,11 @@
 
 ### Fixed
 
+- Enum-typed properties are now matched to their enum by the Rive runtime — the
+  exact enum type name (`ViewModelInstanceEnum.enumType`) in the Flutter app, and
+  the property's value set in the CLI — instead of guessing from the property
+  name. Enum properties no longer need to be named after their enum; the old
+  name-based match remains only as a fallback.
 - Nested `viewModel`-typed properties now resolve to their real top-level class
   (matched by property shape) instead of generating a duplicate class named
   after the property. A view model embedded in another (used as a library) now
