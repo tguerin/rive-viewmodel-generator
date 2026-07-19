@@ -1,6 +1,12 @@
 # rive_viewmodel
 
+[![pub package](https://img.shields.io/pub/v/rive_viewmodel?logo=dart&label=rive_viewmodel)](https://pub.dev/packages/rive_viewmodel)
+[![Dart SDK](https://img.shields.io/badge/Dart-%3E%3D3.0.0-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
+
 Abstract interface for Rive ViewModels with lifecycle management.
+
+> Part of the [rive-viewmodel-generator](../../README.md) monorepo.
 
 ## Overview
 

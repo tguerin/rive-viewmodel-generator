@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1
+
+### Fixed
+
+- `rive-gen --version` now reports the installed package version. It was
+  hardcoded to `0.1.0` in the CLI entry point and never updated, so every
+  published release printed `0.1.0` regardless of the real version. The version
+  is now read from `package.json` at runtime.
+
 ## 0.3.0
 
 ### Fixed

@@ -32,12 +32,30 @@ const DEFAULT_TEMPLATES_DIR =
   TEMPLATE_CANDIDATES.find((dir) => fs.existsSync(dir)) ??
   TEMPLATE_CANDIDATES[0];
 
+// Read the version from package.json so `--version` always matches the
+// published package. npm always ships package.json at the tarball root, so:
+//   1. Compiled/published (dist/bin -> <pkg>/package.json).
+//   2. Source via tsx (bin -> <pkg>/package.json).
+// The first candidate that exists on disk wins.
+const PACKAGE_JSON_CANDIDATES = [
+  path.resolve(__dirname, '../../package.json'),
+  path.resolve(__dirname, '../package.json'),
+];
+const VERSION = (() => {
+  for (const candidate of PACKAGE_JSON_CANDIDATES) {
+    if (fs.existsSync(candidate)) {
+      return JSON.parse(fs.readFileSync(candidate, 'utf-8')).version as string;
+    }
+  }
+  return '0.0.0';
+})();
+
 const program = new Command();
 
 program
   .name('rive-gen')
   .description('Generate ViewModel code from Rive (.riv) files')
-  .version('0.1.0')
+  .version(VERSION)
   .requiredOption('-i, --input <file>', 'Path to the input .riv file')
   .option(
     '-o, --output <dir>',
