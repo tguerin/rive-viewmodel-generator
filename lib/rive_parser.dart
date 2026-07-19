@@ -317,9 +317,20 @@ class RiveParser {
 
       switch (property.type) {
         case DataType.enumType:
+          // Resolve the enum type directly from the runtime (exact) and only
+          // fall back to matching the property name against enum names.
+          final enumTypeName = viewModel.enumerator(property.name)?.enumType;
           final enumFromRive = riveFile.enums.firstWhere(
-            (e) => property.name.toLowerCase().contains(e.name.toLowerCase()),
-            orElse: () => DataEnum(property.name, []),
+            (e) =>
+                enumTypeName != null &&
+                enumTypeName.isNotEmpty &&
+                e.name == enumTypeName,
+            orElse:
+                () => riveFile.enums.firstWhere(
+                  (e) =>
+                      property.name.toLowerCase().contains(e.name.toLowerCase()),
+                  orElse: () => DataEnum(property.name, []),
+                ),
           );
           final enumName = _sanitizeClassName(enumFromRive.name.toClassName());
           final enumValues = enumFromRive.values;
