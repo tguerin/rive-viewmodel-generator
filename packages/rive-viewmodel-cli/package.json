@@ -1,6 +1,6 @@
 {
   "name": "@rive-viewmodel/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CLI to generate ViewModel code from Rive (.riv) files",
   "type": "module",
   "license": "BSD-3-Clause",
