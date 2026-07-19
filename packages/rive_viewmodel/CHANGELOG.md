@@ -1,3 +1,8 @@
+## 1.0.1
+
+* Fix the `repository` URL in the package metadata and README (was a
+  `yourusername` placeholder pointing to a non-existent repository).
+
 ## 1.0.0
 
 * Initial release

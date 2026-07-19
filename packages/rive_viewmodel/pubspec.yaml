@@ -1,6 +1,6 @@
 name: rive_viewmodel
 description: Abstract interface for Rive ViewModels with lifecycle management. Provides a common contract for generated Rive ViewModel classes.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/tguerin/rive-viewmodel-generator
 
 environment:
