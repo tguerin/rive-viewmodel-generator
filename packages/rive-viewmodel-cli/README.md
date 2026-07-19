@@ -1,8 +1,14 @@
 # rive-gen CLI
 
+[![npm version](https://img.shields.io/npm/v/@rive-viewmodel/cli?logo=npm&label=%40rive-viewmodel%2Fcli)](https://www.npmjs.com/package/@rive-viewmodel/cli)
+[![node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](../../LICENSE)
+
 A Node.js CLI that generates Dart ViewModel wrapper code from Rive (`.riv`) files.
 
 It uses `@rive-app/canvas-advanced` (the Rive JS/WASM runtime) to introspect `.riv` files and produces the same Dart output as the [web app](https://tguerin.github.io/rive-viewmodel-generator/).
+
+> Part of the [rive-viewmodel-generator](../../README.md) monorepo.
 
 ## Prerequisites
 
