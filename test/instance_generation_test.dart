@@ -78,4 +78,61 @@ void main() {
     expect(code, contains('class WidgetViewModel'));
     expect(code, contains('fromViewModel'));
   });
+
+  // Release builds (`--obfuscate` / minification) can rename the identifiers
+  // behind an enum's implicit `.name` and `.toString()`, which would break any
+  // round-trip that relies on them. The generator must round-trip enums and
+  // instances through explicit string-literal fields instead.
+  test('enums round-trip via string literals, not .name/.toString()', () async {
+    final model = RiveFileModel(
+      fileName: 'widget.riv',
+      fileNameBase: 'Widget',
+      artboards: const [],
+      viewModels: [
+        ViewModelModel(
+          name: 'WidgetViewModel',
+          className: 'WidgetViewModel',
+          properties: [
+            PropertyModel(
+              name: 'mode',
+              originalName: 'mode',
+              type: PropertyType.enumType,
+              metadata: {'enumType': 'Mode'},
+            ),
+          ],
+          enums: [
+            EnumModel(
+              name: 'Mode',
+              values: [
+                EnumValueModel(name: 'light', value: 'light'),
+                EnumValueModel(name: 'dark', value: 'dark'),
+              ],
+            ),
+          ],
+          instances: [InstanceModel(name: 'primary', value: 'primary')],
+          runtimeName: 'Widget',
+        ),
+      ],
+    );
+    final code = await TemplateGenerator(Language.dart).generate(model);
+
+    // Data enum carries the original Rive string as a `value` field literal…
+    expect(code, contains("light('light')"));
+    expect(code, contains('final String value;'));
+    // …and round-trips through it, never through the implicit `.name`.
+    expect(
+      code,
+      contains("e.value == _viewModel.enumerator('mode')!.value"),
+    );
+    expect(code, contains("_viewModel.enumerator('mode')!.value = value.value"));
+
+    // The instance enum round-trips through its `instanceName` field literal.
+    expect(code, contains("primary('primary')"));
+    expect(code, contains('instance.instanceName'));
+
+    // Obfuscation-unsafe patterns must never appear for enum round-tripping.
+    expect(code, isNot(contains('.toString()')));
+    expect(code, isNot(contains("e.name == _viewModel.enumerator")));
+    expect(code, isNot(contains("!.value = value.name")));
+  });
 }

@@ -133,6 +133,27 @@ function matchNestedClassByShape(
   return match;
 }
 
+/**
+ * Matches an enum-typed property to its DataEnum by comparing the property's
+ * allowed values against each file enum's values (the WASM runtime does not
+ * expose the enum's name on the property). Returns the match only when exactly
+ * one file enum has the same values, so ambiguous cases fall back to the
+ * name-based heuristic.
+ */
+function matchEnumByValues(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  allEnums: any[],
+  values: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any | undefined {
+  if (values.length === 0) return undefined;
+  const key = JSON.stringify(values);
+  const matches = allEnums.filter(
+    (e) => JSON.stringify((e.values as string[]) ?? []) === key,
+  );
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseViewModelToIR(
   className: string,
@@ -166,9 +187,16 @@ function parseViewModelToIR(
       case DataType.enumType: {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const allEnums: any[] = riveFile.enums();
-        const enumFromRive = allEnums.find((e: { name: string }) =>
-          property.name.toLowerCase().includes(e.name.toLowerCase()),
-        );
+        // Resolve the enum by its allowed values (exact) and only fall back to
+        // matching the property name against enum names.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const enumInstance: any = viewModelInstance.enum(property.name);
+        const propValues: string[] = (enumInstance?.values as string[]) ?? [];
+        const enumFromRive =
+          matchEnumByValues(allEnums, propValues) ??
+          allEnums.find((e: { name: string }) =>
+            property.name.toLowerCase().includes(e.name.toLowerCase()),
+          );
         const rawEnumName = enumFromRive ? enumFromRive.name : property.name;
         const enumName = sanitizeClassName(toClassName(rawEnumName));
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -66,7 +66,14 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:rive_native/rive_native.dart';
 
-enum Orientation { portrait, landscape }
+enum Orientation {
+  portrait('portrait'),
+  landscape('landscape');
+
+  const Orientation(this.value);
+
+  final String value;
+}
 
 enum ArtboardStateMachine {
   stateMachine1('State Machine 1');
@@ -238,11 +245,11 @@ class TestViewModel {
   }
 
   Orientation get orientation => Orientation.values.firstWhere(
-    (e) => e.name == _viewModel.enumerator('orientation')!.value,
+    (e) => e.value == _viewModel.enumerator('orientation')!.value,
   );
 
   set orientation(Orientation value) =>
-      _viewModel.enumerator('orientation')!.value = value.name;
+      _viewModel.enumerator('orientation')!.value = value.value;
 
   Stream<Orientation> get orientationStream {
     return (_streamControllers['orientation'] ??= () {
@@ -250,7 +257,7 @@ class TestViewModel {
           _streamControllers['orientation'] = controller;
           final property = _viewModel.enumerator('orientation')!;
           void valueListener(String value) => controller.add(
-            Orientation.values.firstWhere((e) => e.name == value),
+            Orientation.values.firstWhere((e) => e.value == value),
           );
           void onListen() => property.addListener(valueListener);
           void onCancel() => property.removeListener(valueListener);
@@ -277,9 +284,11 @@ class TestViewModel {
 
 ## Important Notes
 
-1. **Enum Properties**: Properties that use enums must end with the enum name. For example:
-   - Valid: `playerOrientation`, `gameState`, `menuOrientation`
-   - Invalid: `orientationPlayer`, `stateGame`
+1. **Enum Properties**: Each enum property is matched to its enum type directly
+   from the Rive runtime (by exact type name in the Flutter app, by value set in
+   the CLI), so the property can be named anything. Only if the runtime cannot
+   resolve it does the generator fall back to matching the property name against
+   an enum name (e.g. `playerOrientation` → `Orientation`).
 
 2. **Generated Files**: Each generated file includes:
    - Type-safe getters and setters for all properties

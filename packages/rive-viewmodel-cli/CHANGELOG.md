@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.0
+
+### Fixed
+
+- Enum-typed properties are now matched to their enum by the Rive runtime — the
+  exact enum type name (`ViewModelInstanceEnum.enumType`) in the Flutter app, and
+  the property's value set in the CLI — instead of guessing from the property
+  name. Enum properties no longer need to be named after their enum; the old
+  name-based match remains only as a fallback.
+
+### Docs
+
+- Corrected the README's generated-code example, which showed an enum round-trip
+  via the identifier-based `.name` (renamed by `--obfuscate` / minified release
+  builds). Generated enums round-trip through explicit string-literal fields
+  (`value` / `instanceName`) and are safe under obfuscation; added a regression
+  test that locks this in.
+
 ## 0.2.0
 
 ### Added
