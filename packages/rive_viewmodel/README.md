@@ -82,7 +82,7 @@ void manageViewModel(RiveViewModel viewModel) {
 
 ## Related Packages
 
-- [rive_viewmodel_generator](https://github.com/yourusername/rive-viewmodel-generator) - Code generator for Rive ViewModels
+- [rive_viewmodel_generator](https://github.com/tguerin/rive-viewmodel-generator) - Code generator for Rive ViewModels
 
 ## License
 
