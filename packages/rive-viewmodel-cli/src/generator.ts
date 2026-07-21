@@ -148,7 +148,10 @@ function buildProperties(properties: PropertyModel[]): object[] {
     name: p.name,
     originalName: p.originalName,
     capitalizedName: capitalize(p.name),
-    streamName: `${p.name}Stream`,
+    streamName:
+      p.type === PropertyType.trigger
+        ? `on${capitalize(p.name.startsWith('trigger') ? p.name.slice('trigger'.length) : p.name)}Triggered`
+        : `${p.name}Stream`,
     isBoolean: p.type === PropertyType.boolean,
     isNumberInt: p.type === PropertyType.integer,
     isNumberDouble: p.type === PropertyType.number,
