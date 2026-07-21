@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- **Trigger streams.** Each trigger property now generates a broadcast
+  `Stream<void>` in addition to the existing fire method, so you can react to a
+  trigger with `.listen(...)` instead of polling. Named triggers expose an
+  `on<Name>Triggered` getter (a leading `trigger` prefix is stripped, e.g.
+  `triggerJump` → `onJumpTriggered`); indexed trigger collections expose a
+  `<name>Stream(int index)` method. The stream attaches a listener to the
+  underlying Rive trigger on first subscribe and removes it on cancel.
+
+  Thanks to [@cbacouelle](https://github.com/cbacouelle) (Clément Bacouelle) for
+  contributing this feature (#15).
+
 ## 0.3.1
 
 ### Fixed
