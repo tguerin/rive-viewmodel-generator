@@ -68,6 +68,35 @@ void main() {
     expect(code, contains('createDefaultInstance'));
   });
 
+  test('emits a fire method and a listenable stream for a trigger', () async {
+    final code = await generate(
+      ViewModelModel(
+        name: 'WidgetViewModel',
+        className: 'WidgetViewModel',
+        properties: [
+          PropertyModel(
+            name: 'triggerPressed',
+            originalName: 'pressed',
+            type: PropertyType.trigger,
+          ),
+        ],
+        instances: const [],
+        runtimeName: 'Widget',
+      ),
+    );
+
+    // The fire-and-forget method is still emitted.
+    expect(
+      code,
+      contains("void triggerPressed() => _viewModel.trigger('pressed')!.trigger();"),
+    );
+
+    // …plus a broadcast stream named on<Name>Triggered that emits each fire.
+    expect(code, contains('Stream<void> get onPressedTriggered {'));
+    expect(code, contains("final property = _viewModel.trigger('pressed')!;"));
+    expect(code, contains('void valueListener(bool value) => controller.add(null);'));
+  });
+
   test('emits no instance support when there are no instances', () async {
     final code = await generate(widgetViewModel());
 

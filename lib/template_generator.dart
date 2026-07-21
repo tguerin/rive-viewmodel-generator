@@ -171,13 +171,13 @@ class TemplateGenerator {
     // Deduplicate state machine enums by enum name
     final seenStateMachineEnums = <String>{};
     final stateMachineEnums = <Map<String, dynamic>>[];
-    
+
     for (final artboard in model.artboards) {
       if (artboard.stateMachines.isEmpty) continue;
-      
+
       final enumName = '${artboard.className}StateMachine';
       if (seenStateMachineEnums.contains(enumName)) continue;
-      
+
       seenStateMachineEnums.add(enumName);
       stateMachineEnums.add({
         'name': enumName,
@@ -198,10 +198,10 @@ class TemplateGenerator {
     // Deduplicate implementations by className
     final seenImplementations = <String>{};
     final implementations = <Map<String, dynamic>>[];
-    
+
     for (final artboard in model.artboards) {
       if (seenImplementations.contains(artboard.className)) continue;
-      
+
       seenImplementations.add(artboard.className);
       implementations.add({
         'className': artboard.className,
@@ -277,7 +277,10 @@ class TemplateGenerator {
             'name': prop.name,
             'originalName': prop.originalName,
             'capitalizedName': prop.name.capitalize(),
-            'streamName': '${prop.name}Stream',
+            'streamName':
+                prop.type == PropertyType.trigger
+                    ? 'on${(prop.name.startsWith('trigger') ? prop.name.substring('trigger'.length) : prop.name).capitalize()}Triggered'
+                    : '${prop.name}Stream',
             'isBoolean': prop.type == PropertyType.boolean,
             'isNumberInt': prop.type == PropertyType.integer,
             'isNumberDouble': prop.type == PropertyType.number,

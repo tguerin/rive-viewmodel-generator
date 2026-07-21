@@ -229,6 +229,21 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
 {{#isTrigger}}
 
   void {{name}}() => _viewModel.trigger('{{originalName}}')!.trigger();
+
+  Stream<void> get {{streamName}} {
+    return (_streamControllers['{{originalName}}'] ??= () {
+      final controller = StreamController<void>.broadcast();
+      _streamControllers['{{originalName}}'] = controller;
+      final property = _viewModel.trigger('{{originalName}}')!;
+      void valueListener(bool value) => controller.add(null);
+      void onListen() => property.addListener(valueListener);
+      void onCancel() => property.removeListener(valueListener);
+      controller
+        ..onListen = onListen
+        ..onCancel = onCancel;
+      return controller;
+    }()).stream as Stream<void>;
+  }
 {{/isTrigger}}
 {{/properties}}
 
@@ -502,6 +517,28 @@ class {{className}}{{#useInterface}} implements RiveViewModel{{/useInterface}} {
     switch (index) {
 {{#items}}
       case {{index}}: _viewModel.trigger('{{originalName}}')!.trigger(); break;
+{{/items}}
+      default: throw RangeError('Index $index is out of range for {{name}}');
+    }
+  }
+
+  Stream<void> {{name}}Stream(int index) {
+    switch (index) {
+{{#items}}
+      case {{index}}: {
+        return (_streamControllers['{{originalName}}'] ??= () {
+          final controller = StreamController<void>.broadcast();
+          _streamControllers['{{originalName}}'] = controller;
+          final property = _viewModel.trigger('{{originalName}}')!;
+          void valueListener(bool value) => controller.add(null);
+          void onListen() => property.addListener(valueListener);
+          void onCancel() => property.removeListener(valueListener);
+          controller
+            ..onListen = onListen
+            ..onCancel = onCancel;
+          return controller;
+        }()).stream as Stream<void>;
+      }
 {{/items}}
       default: throw RangeError('Index $index is out of range for {{name}}');
     }
